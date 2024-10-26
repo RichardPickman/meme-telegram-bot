@@ -1,7 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import TelegramBot, {
     CallbackQuery,
-    Chat,
     Message,
     Update,
 } from 'node-telegram-bot-api';
@@ -315,9 +314,15 @@ const proceedWithAdminAction = async (
     return SUCCESSFUL_RESPONSE;
 };
 
-const isMemePropositionFromBotChat = (
-    body: Body & { chat: Chat | undefined },
-) => 'chat' in body && body.chat && body.chat.type === 'private';
+const isMessageContainPrivateChatType = (message: Message | undefined) => {
+    const chat = message?.chat ?? undefined;
+
+    if (chat && chat.type === 'private') {
+        return true;
+    }
+
+    return false;
+};
 
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Starting handler...');
@@ -332,7 +337,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('Invalid event');
     }
 
-    const isMemeProposal = isMemePropositionFromBotChat(body.message);
+    // Check chat type presence
+    const isMemeProposal = isMessageContainPrivateChatType(body.message);
     const hasMedia = isMessageContainImageOrVideo(body);
 
     if (isMemeProposal && hasMedia) {
