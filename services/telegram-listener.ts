@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import TelegramBot, {
     CallbackQuery,
+    Chat,
     Message,
     Update,
 } from 'node-telegram-bot-api';
@@ -314,6 +315,10 @@ const proceedWithAdminAction = async (
     return SUCCESSFUL_RESPONSE;
 };
 
+const isMemePropositionFromBotChat = (
+    body: Body & { chat: Chat | undefined },
+) => 'chat' in body && body.chat && body.chat.type === 'private';
+
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Starting handler...');
 
@@ -327,9 +332,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('Invalid event');
     }
 
-    const isProposedMeme = isMessageContainImageOrVideo(body);
+    const isMemeProposal = isMemePropositionFromBotChat(body.message);
+    const hasMedia = isMessageContainImageOrVideo(body);
 
-    if (isProposedMeme) {
+    if (isMemeProposal && hasMedia) {
+        console.log(
+            'Request is determined as meme proposal... Proceeding with media...',
+        );
+
         return await proceedWithMedia(body);
     }
 
