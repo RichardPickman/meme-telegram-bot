@@ -125,7 +125,7 @@ const SUCCESSFUL_RESPONSE = {
     statusCode: 200,
 };
 
-const handleMessage = async (data: Message) => {
+const handleProposal = async (data: Message) => {
     console.log(data);
 
     if (isPhotoParameterExist(data)) {
@@ -181,7 +181,7 @@ const isMessageContainImageOrVideo = (body: Body) =>
 
 const isMessageIsCallbackQuery = (body: Body) => 'callback_query' in body;
 
-const proceedWithMedia = async (body: Body) => {
+const proceedWithMemeProposal = async (body: Body) => {
     console.log('Proceeding with media...');
 
     const isForwarded = isForwardedMessage(body);
@@ -195,7 +195,7 @@ const proceedWithMedia = async (body: Body) => {
             return ErrorResponse('No photo provided');
         }
 
-        return await handleMessage(channelPost);
+        return await handleProposal(channelPost);
     }
 
     const isCommonMessage = isMessage(body);
@@ -209,7 +209,7 @@ const proceedWithMedia = async (body: Body) => {
             return ErrorResponse('No photo provided');
         }
 
-        return await handleMessage(message);
+        return await handleProposal(message);
     }
 
     return SUCCESSFUL_RESPONSE;
@@ -314,6 +314,13 @@ const proceedWithAdminAction = async (
     return SUCCESSFUL_RESPONSE;
 };
 
+/*
+    Check if message is from private chat with bot
+
+    @param message - Message object from Telegram Message interface
+
+    @returns boolean
+*/
 const isMessageContainPrivateChatType = (message: Message | undefined) => {
     const chat = message?.chat ?? undefined;
 
@@ -324,6 +331,13 @@ const isMessageContainPrivateChatType = (message: Message | undefined) => {
     return false;
 };
 
+/*
+    Main handler, that recieves api requests from API Gateway
+
+    @param message - Message object from Telegram Message interface
+
+    @returns boolean
+*/
 export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Starting handler...');
 
@@ -346,7 +360,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             'Request is determined as meme proposal... Proceeding with media...',
         );
 
-        return await proceedWithMedia(body);
+        return await proceedWithMemeProposal(body);
     }
 
     const isAdminAction = isMessageIsCallbackQuery(body);
