@@ -198,9 +198,9 @@ const proceedWithMemeProposal = async (body: Body) => {
         return await handleProposal(channelPost);
     }
 
-    const isCommonMessage = isMessage(body);
+    const isDirectMessage = isMessage(body);
 
-    if (isCommonMessage) {
+    if (isDirectMessage) {
         const message = body.message;
 
         if (!message) {
