@@ -1,14 +1,14 @@
+import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
-import { commonLambdaProps, rootDir } from './helpers';
 import path from 'path';
-import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import {
     TELEGRAM_BOT_TOKEN,
-    TELEGRAM_PROPOSAL_CHANNEL_ID,
     TELEGRAM_MEME_CHANNEL_ID,
+    TELEGRAM_PROPOSAL_CHANNEL_ID,
 } from './environments';
+import { commonLambdaProps, rootDir } from './helpers';
 
 const lambdaPath = path.join(rootDir, 'services');
 
