@@ -3,21 +3,17 @@ import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import path from 'path';
-import {
-    TELEGRAM_BOT_TOKEN,
-    TELEGRAM_MEME_CHANNEL_ID,
-    TELEGRAM_PROPOSAL_CHANNEL_ID,
-} from './environments';
 import { commonLambdaProps, rootDir } from './helpers';
 
 const lambdaPath = path.join(rootDir, 'services');
 
-if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_PROPOSAL_CHANNEL_ID) {
-    throw new Error('One or more environmental variables are not set');
-}
-
 export class MemeTelegramBotStack extends Stack {
-    constructor(scope: Construct, id: string, props?: StackProps) {
+    constructor(
+        scope: Construct,
+        id: string,
+        stageName: 'prod' | 'test',
+        props?: StackProps,
+    ) {
         super(scope, id, props);
 
         const memeTelegramBotHandler = new NodejsFunction(
@@ -27,9 +23,12 @@ export class MemeTelegramBotStack extends Stack {
                 ...commonLambdaProps,
                 entry: path.join(lambdaPath, 'telegram-listener.ts'),
                 environment: {
-                    TELEGRAM_BOT_TOKEN: TELEGRAM_BOT_TOKEN!,
-                    TELEGRAM_PROPOSAL_CHANNEL_ID: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-                    TELEGRAM_MEME_CHANNEL_ID: TELEGRAM_MEME_CHANNEL_ID!,
+                    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN!,
+                    TELEGRAM_PROPOSAL_CHANNEL_ID:
+                        process.env.TELEGRAM_PROPOSAL_CHANNEL_ID!,
+                    TELEGRAM_MEME_CHANNEL_ID:
+                        process.env.TELEGRAM_MEME_CHANNEL_ID!,
+                    stageName,
                 },
             },
         );
