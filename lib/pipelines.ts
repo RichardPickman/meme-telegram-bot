@@ -1,4 +1,4 @@
-import { Stack, StackProps, Stage } from 'aws-cdk-lib';
+import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import {
     CodePipeline,
     CodePipelineSource,
@@ -6,49 +6,84 @@ import {
     ShellStep,
 } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
-import {
-    TELEGRAM_BOT_TOKEN,
-    TELEGRAM_MEME_CHANNEL_ID,
-    TELEGRAM_PROPOSAL_CHANNEL_ID,
-} from './environments';
-import { PipelineAppStageStack } from './stage';
+import { GITHUB_TOKEN } from './environments';
+import { PipelineAppStage } from './stage';
+
+const github = 'RichardPickman/meme-telegram-bot';
+const inputOptions = {
+    authentication: new SecretValue(GITHUB_TOKEN),
+};
+const commands = [
+    'corepack enable',
+    'corepack prepare pnpm@latest --activate',
+    'npm install',
+    'npx cdk synth',
+];
 
 export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const pipeline = new CodePipeline(this, 'MemeTelegramBotPipeline', {
-            pipelineName: 'MemeTelegramBotPipeline',
-            synth: new ShellStep('MemeTelegramBotSynth', {
-                input: CodePipelineSource.gitHub(
-                    'RichardPickman/meme-telegram-bot',
-                    'master',
-                ),
-                env: {
-                    TELEGRAM_BOT_TOKEN: TELEGRAM_BOT_TOKEN!,
-                    TELEGRAM_PROPOSAL_CHANNEL_ID: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-                    TELEGRAM_MEME_CHANNEL_ID: TELEGRAM_MEME_CHANNEL_ID!,
-                },
-                commands: ['npm install', 'npx cdk synth'],
-            }),
-        });
+        // const productionPipeline = new CodePipeline(
+        //     this,
+        //     'TelegramMemeBotProductionPipeline',
+        //     {
+        //         pipelineName: 'TelegramMemeBotProductionPipeline',
+        //         synth: new ShellStep('MemeTelegramBotProductionSynth', {
+        //             input: CodePipelineSource.gitHub(
+        //                 github,
+        //                 'master',
+        //                 inputOptions,
+        //             ),
+        //             commands,
+        //             env: {
+        //                 TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN!,
+        //                 TELEGRAM_PROPOSAL_CHANNEL_ID:
+        //                     process.env.TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        //                 TELEGRAM_MEME_CHANNEL_ID:
+        //                     process.env.TELEGRAM_MEME_CHANNEL_ID!,
+        //             },
+        //         }),
+        //     },
+        // );
 
-        const testStage = new Stage(
-            new PipelineAppStageStack(this, 'testing'),
-            'TestingStage',
+        const testingPipeline = new CodePipeline(
+            this,
+            'TelegramMemeBotTestingPipeline',
+            {
+                pipelineName: 'TelegramMemeBotTestingPipeline',
+                synth: new ShellStep('MemeTelegramBotTestingSynth', {
+                    input: CodePipelineSource.gitHub(
+                        github,
+                        'testing',
+                        inputOptions,
+                    ),
+                    commands,
+                    env: {
+                        TELEGRAM_BOT_TOKEN: process.env.TESTING_BOT_TOKEN!,
+                        TELEGRAM_PROPOSAL_CHANNEL_ID:
+                            process.env.TESTING_PROPOSAL_CHANNEL_ID!,
+                        TELEGRAM_MEME_CHANNEL_ID:
+                            process.env.TESTING_MEME_CHANNEL_ID!,
+                    },
+                }),
+            },
         );
 
-        const productionStage = new Stage(
-            new PipelineAppStageStack(this, 'production'),
-            'ProductionStage',
-        );
-
-        pipeline
-            .addStage(testStage)
+        testingPipeline
+            .addStage(
+                new PipelineAppStage(this, 'test', {
+                    stackName: 'test',
+                }),
+            )
             .addPost(new ManualApprovalStep('Approve testing stage'));
 
-        pipeline
-            .addStage(productionStage)
-            .addPost(new ManualApprovalStep('Approve production stage'));
+        //     productionPipeline
+        //         .addStage(
+        //             new PipelineAppStage(this, 'prod', {
+        //                 stackName: 'prod',
+        //             }),
+        //         )
+        //         .addPost(new ManualApprovalStep('Approve production stage'));
     }
 }
