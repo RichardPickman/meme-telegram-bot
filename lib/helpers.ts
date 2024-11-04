@@ -7,7 +7,7 @@ export const rootDir = path.join(__dirname, '../');
 export const commonLambdaProps: NodejsFunctionProps = {
     runtime: Runtime.NODEJS_20_X,
     projectRoot: rootDir,
-    depsLockFilePath: path.join(rootDir, 'pnpm-lock.yaml'),
+    depsLockFilePath: path.join(rootDir, 'package-lock.json'),
     bundling: {
         externalModules: ['aws-sdk'],
         minify: false,
