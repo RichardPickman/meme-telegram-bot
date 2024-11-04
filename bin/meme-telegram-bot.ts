@@ -5,6 +5,6 @@ import { PipelineStack } from '../lib/pipelines';
 
 const app = new cdk.App();
 
-new PipelineStack(app, 'PipelineStack', {
-    stackName: 'PipelineStack',
-});
+new PipelineStack(app, 'PipelineStack');
+
+app.synth();
