@@ -47,7 +47,7 @@ export class MemeTelegramBotStack extends Stack {
 
         new CfnOutput(this, 'Api address', {
             value: proposeMeme.path,
-            exportName: 'RootApiAddress',
+            exportName: `RootApiAddress-${stageName}`,
         });
     }
 }

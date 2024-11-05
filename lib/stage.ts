@@ -10,10 +10,6 @@ export class PipelineAppStage extends Stage {
     ) {
         super(scope, stageName, props);
 
-        const stage = new MemeTelegramBotStack(
-            this,
-            'MemeTelegramBot',
-            stageName,
-        );
+        new MemeTelegramBotStack(this, 'MemeTelegramBot', stageName);
     }
 }
