@@ -5,6 +5,11 @@ import {
     ShellStep,
 } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
+import {
+    TESTING_BOT_TOKEN,
+    TESTING_MEME_CHANNEL_ID,
+    TESTING_PROPOSAL_CHANNEL_ID,
+} from './environments';
 import { PipelineAppStage } from './stage';
 
 const commands = [
@@ -30,11 +35,9 @@ export class PipelineStack extends Stack {
                 ),
                 commands,
                 env: {
-                    TELEGRAM_BOT_TOKEN: process.env.TESTING_BOT_TOKEN!,
-                    TELEGRAM_PROPOSAL_CHANNEL_ID:
-                        process.env.TESTING_PROPOSAL_CHANNEL_ID!,
-                    TELEGRAM_MEME_CHANNEL_ID:
-                        process.env.TESTING_MEME_CHANNEL_ID!,
+                    TELEGRAM_BOT_TOKEN: TESTING_BOT_TOKEN!,
+                    TELEGRAM_PROPOSAL_CHANNEL_ID: TESTING_PROPOSAL_CHANNEL_ID!,
+                    TELEGRAM_MEME_CHANNEL_ID: TESTING_MEME_CHANNEL_ID!,
                 },
             }),
         });
