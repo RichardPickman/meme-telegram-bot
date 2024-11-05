@@ -1,17 +1,12 @@
-import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import {
     CodePipeline,
     CodePipelineSource,
     ShellStep,
 } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
-import { GITHUB_TOKEN } from './environments';
 import { PipelineAppStage } from './stage';
 
-const github = 'RichardPickman/meme-telegram-bot';
-const inputOptions = {
-    authentication: new SecretValue(GITHUB_TOKEN),
-};
 const commands = [
     'corepack enable',
     'corepack prepare pnpm@latest --activate',
@@ -25,10 +20,13 @@ export class PipelineStack extends Stack {
 
         const pipeline = new CodePipeline(this, 'Meme Bot', {
             synth: new ShellStep('Synth', {
-                input: CodePipelineSource.gitHub(
-                    github,
+                input: CodePipelineSource.connection(
+                    'RichardPickman/meme-telegram-bot',
                     'testing',
-                    inputOptions,
+                    {
+                        connectionArn:
+                            'arn:aws:codestar-connections:eu-west-2:905418082172:connection/733d69dc-dfa5-4ca6-b377-e4444c2f716e',
+                    },
                 ),
                 commands,
                 env: {
