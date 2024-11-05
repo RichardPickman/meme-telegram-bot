@@ -1,4 +1,4 @@
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
@@ -44,10 +44,5 @@ export class MemeTelegramBotStack extends Stack {
             'POST',
             new LambdaIntegration(memeTelegramBotHandler),
         );
-
-        new CfnOutput(this, 'Api address', {
-            value: proposeMeme.path,
-            exportName: `RootApiAddress-${stageName}`,
-        });
     }
 }
