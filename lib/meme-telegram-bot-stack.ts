@@ -21,12 +21,7 @@ const environmentVariables = {
 };
 
 export class MemeTelegramBotStack extends Stack {
-    constructor(
-        scope: Construct,
-        id: string,
-        stageName: 'prod' | 'test',
-        props?: StackProps,
-    ) {
+    constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const stageName = id.split('-');
