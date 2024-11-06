@@ -1,9 +1,17 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import TelegramBot, {
-    CallbackQuery,
-    Message,
-    Update,
-} from 'node-telegram-bot-api';
+import { CallbackQuery, Message, Update } from 'node-telegram-bot-api';
+import { bot } from './instanses';
+import {
+    isForwardedMessage,
+    isMessage,
+    isMessageContainImageOrVideo,
+    isMessageContainPrivateChatType,
+    isMessageIsCallbackQuery,
+    isPhotoParameterExist,
+    isVideoParameterExist,
+} from './utils/booleans';
+import { cleanUpAfterAction } from './utils/cleanUp';
+import { sendPhotoToChannel, sendVideoToChannel } from './utils/senders';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_PROPOSAL_CHANNEL_ID = process.env.TELEGRAM_PROPOSAL_CHANNEL_ID;
@@ -19,102 +27,7 @@ if (!ENV_VARS.every(Boolean)) {
     throw new Error('One or more environmental variables are not set');
 }
 
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!);
-
 type Body = Update;
-
-const sendProposedMemeControls = async (messageId: number) => {
-    console.log(`Proceeding with action buttons...`);
-
-    try {
-        await bot.sendMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, '🧐', {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Approve',
-                            callback_data: `approve-${messageId}`,
-                        },
-                    ],
-                    [
-                        {
-                            text: 'Decline',
-                            callback_data: `decline-${messageId}`,
-                        },
-                    ],
-                ],
-            },
-        });
-
-        console.log('Buttons sent. Finishing up...');
-
-        return SUCCESSFUL_RESPONSE;
-    } catch (e) {
-        console.log('Error sending buttons: ', e);
-
-        return ErrorResponse('Error sending buttons');
-    }
-};
-
-const sendPhotoToChannel = async (
-    photoId: string,
-    caption: string = '',
-    isProposal: boolean = true,
-) => {
-    try {
-        const message = await bot.sendPhoto(
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            photoId,
-            {
-                caption,
-            },
-        );
-
-        console.log('Photo sent. Photo data: ', JSON.stringify(message));
-
-        if (isProposal) {
-            await sendProposedMemeControls(message.message_id);
-        }
-
-        return SUCCESSFUL_RESPONSE;
-    } catch (e) {
-        console.log('Error sending photo: ', e);
-
-        return ErrorResponse('Error sending photo');
-    }
-};
-
-const sendVideoToChannel = async (
-    videoId: string,
-    caption: string = '',
-    isProposal: boolean = true,
-) => {
-    try {
-        const message = await bot.sendVideo(
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            videoId,
-            {
-                caption,
-            },
-        );
-
-        if (isProposal) {
-            await sendProposedMemeControls(message.message_id);
-        }
-
-        return SUCCESSFUL_RESPONSE;
-    } catch (e) {
-        console.log('Error sending photo: ', e);
-
-        return ErrorResponse('Error sending photo');
-    }
-};
-
-const isPhotoParameterExist = (data: Message) => 'photo' in data;
-const isVideoParameterExist = (data: Message) => 'video' in data;
-
-const isForwardedMessage = (body: Body) => 'channel_post' in body;
-const isMessage = (body: Body) => 'message' in body;
 
 const ErrorResponse = (message: string) => ({
     statusCode: 200,
@@ -139,7 +52,11 @@ const handleProposal = async (data: Message) => {
 
         const photoId = photo.file_id;
 
-        await sendPhotoToChannel(photoId, data.caption);
+        await sendPhotoToChannel(
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            photoId,
+            data.caption,
+        );
 
         return SUCCESSFUL_RESPONSE;
     }
@@ -153,7 +70,11 @@ const handleProposal = async (data: Message) => {
             return ErrorResponse('No video provided');
         }
 
-        await sendVideoToChannel(video.file_id, data.caption);
+        await sendVideoToChannel(
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            video.file_id,
+            data.caption,
+        );
 
         return SUCCESSFUL_RESPONSE;
     }
@@ -175,11 +96,6 @@ const isAdmin = async (id: number) => {
 
 const getBodyOrNull = (event: APIGatewayProxyEvent) =>
     event.body ? JSON.parse(event.body) : null;
-
-const isMessageContainImageOrVideo = (body: Body) =>
-    [isForwardedMessage(body), isMessage(body)].some(Boolean);
-
-const isMessageIsCallbackQuery = (body: Body) => 'callback_query' in body;
 
 const proceedWithMemeProposal = async (body: Body) => {
     console.log('Proceeding with media...');
@@ -213,22 +129,6 @@ const proceedWithMemeProposal = async (body: Body) => {
     }
 
     return SUCCESSFUL_RESPONSE;
-};
-
-const cleanUpAfterAction = async (memeId: string, controlsId: number) => {
-    console.log('Cleaning up after action...');
-
-    try {
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, Number(memeId));
-
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
-
-        return;
-    } catch (e) {
-        console.log('Error cleaning up after action. Error: ', e);
-
-        return ErrorResponse('Error cleaning up after action');
-    }
 };
 
 const proceedWithAdminAction = async (
@@ -285,6 +185,7 @@ const proceedWithAdminAction = async (
         }
 
         await cleanUpAfterAction(
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
             messageId,
             body.callback_query.message.message_id,
         );
@@ -304,6 +205,7 @@ const proceedWithAdminAction = async (
         });
 
         await cleanUpAfterAction(
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
             messageId,
             body.callback_query.message.message_id,
         );
@@ -312,23 +214,6 @@ const proceedWithAdminAction = async (
     }
 
     return SUCCESSFUL_RESPONSE;
-};
-
-/*
-    Check if message is from private chat with bot
-
-    @param message - Message object from Telegram Message interface
-
-    @returns boolean
-*/
-const isMessageContainPrivateChatType = (message: Message | undefined) => {
-    const chat = message?.chat ?? undefined;
-
-    if (chat && chat.type === 'private') {
-        return true;
-    }
-
-    return false;
 };
 
 /*
