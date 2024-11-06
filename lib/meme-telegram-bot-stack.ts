@@ -8,12 +8,7 @@ import { commonLambdaProps, rootDir } from './helpers';
 const lambdaPath = path.join(rootDir, 'services');
 
 export class MemeTelegramBotStack extends Stack {
-    constructor(
-        scope: Construct,
-        id: string,
-        stageName: 'prod' | 'test',
-        props?: StackProps,
-    ) {
+    constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const memeTelegramBotHandler = new NodejsFunction(
@@ -28,7 +23,6 @@ export class MemeTelegramBotStack extends Stack {
                         process.env.TELEGRAM_PROPOSAL_CHANNEL_ID!,
                     TELEGRAM_MEME_CHANNEL_ID:
                         process.env.TELEGRAM_MEME_CHANNEL_ID!,
-                    stageName,
                 },
             },
         );
