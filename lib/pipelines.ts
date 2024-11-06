@@ -23,6 +23,8 @@ export class PipelineStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
+        // Add comment to test CodeBuild phase on CodePipeline
+
         const pipeline = new CodePipeline(this, 'Meme Bot', {
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.connection(
