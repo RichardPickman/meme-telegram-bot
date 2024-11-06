@@ -11,5 +11,3 @@ export const TESTING_BOT_TOKEN = process.env.TESTING_BOT_TOKEN;
 export const TESTING_PROPOSAL_CHANNEL_ID =
     process.env.TESTING_PROPOSAL_CHANNEL_ID;
 export const TESTING_MEME_CHANNEL_ID = process.env.TESTING_MEME_CHANNEL_ID;
-
-export const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
