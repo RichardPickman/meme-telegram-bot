@@ -19,12 +19,12 @@ jobs:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_REGION: eu-west-2
-            TESTING_BOT_TOKEN: ${{ env.TESTING_BOT_TOKEN }}
-            TESTING_PROPOSAL_CHANNEL_ID: ${{ env.TESTING_PROPOSAL_CHANNEL_ID }}
-            TESTING_MEME_CHANNEL_ID: ${{ env.TESTING_MEME_CHANNEL_ID }}
-            TELEGRAM_BOT_TOKEN: ${{ env.TELEGRAM_BOT_TOKEN }}
-            TELEGRAM_PROPOSAL_CHANNEL_ID: ${{ env.TELEGRAM_PROPOSAL_CHANNEL_ID }}
-            TELEGRAM_MEME_CHANNEL_ID: ${{ env.TELEGRAM_MEME_CHANNEL_ID }}
+            TESTING_BOT_TOKEN: ${{ secrets.TESTING_BOT_TOKEN }}
+            TESTING_PROPOSAL_CHANNEL_ID: ${{ secrets.TESTING_PROPOSAL_CHANNEL_ID }}
+            TESTING_MEME_CHANNEL_ID: ${{ secrets.TESTING_MEME_CHANNEL_ID }}
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            TELEGRAM_PROPOSAL_CHANNEL_ID: ${{ secrets.TELEGRAM_PROPOSAL_CHANNEL_ID }}
+            TELEGRAM_MEME_CHANNEL_ID: ${{ secrets.TELEGRAM_MEME_CHANNEL_ID }}
         steps:
             - uses: actions/checkout@v3
 
