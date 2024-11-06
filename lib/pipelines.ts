@@ -28,6 +28,9 @@ export class PipelineStack extends Stack {
         const test =
             'This is a test of codebuild pipeline, cuz comment done nothing';
 
+        const test2 =
+            'Because of concurrent deployment of this stack bonded with new code on github, I push this var to github alone and test the codebuild pipeline';
+
         const pipeline = new CodePipeline(this, 'Meme Bot', {
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.connection(
