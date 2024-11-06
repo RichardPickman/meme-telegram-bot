@@ -1,0 +1,24 @@
+name: Branch-Specific Workflow
+
+on:
+    push:
+        branches: ['master', 'testing']
+
+jobs:
+    master-job:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/master'
+        steps:
+            - uses: actions/checkout@v3
+            - run: echo "This job runs only for the master branch"
+
+    testing-job:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/testing'
+        steps:
+            - uses: actions/checkout@v3
+
+            - run |
+              npm install -g aws-cdk
+              npm install
+              npx cdk deploy MemeTelegramBotStack-testing --require-approval never

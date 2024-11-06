@@ -5,6 +5,7 @@ import { MemeTelegramBotStack } from '../lib/meme-telegram-bot-stack';
 
 const app = new cdk.App();
 
-new MemeTelegramBotStack(app, 'MemeTelegramBotStack');
+new MemeTelegramBotStack(app, 'MemeTelegramBotStack-testing');
+new MemeTelegramBotStack(app, 'MemeTelegramBotStack-production');
 
 app.synth();
