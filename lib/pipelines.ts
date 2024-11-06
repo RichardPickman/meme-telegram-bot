@@ -25,6 +25,9 @@ export class PipelineStack extends Stack {
 
         // Add comment to test CodeBuild phase on CodePipeline
 
+        const test =
+            'This is a test of codebuild pipeline, cuz comment done nothing';
+
         const pipeline = new CodePipeline(this, 'Meme Bot', {
             synth: new ShellStep('Synth', {
                 input: CodePipelineSource.connection(
