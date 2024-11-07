@@ -11,6 +11,7 @@ import {
     isVideoParameterExist,
 } from './utils/booleans';
 import { cleanUpAfterAction } from './utils/cleanUp';
+import { ErrorResponse, SUCCESSFUL_RESPONSE } from './utils/responses';
 import { sendPhotoToChannel, sendVideoToChannel } from './utils/senders';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -29,18 +30,7 @@ if (!ENV_VARS.every(Boolean)) {
 
 type Body = Update;
 
-const ErrorResponse = (message: string) => ({
-    statusCode: 200,
-    body: JSON.stringify({ message }),
-});
-
-const SUCCESSFUL_RESPONSE = {
-    statusCode: 200,
-};
-
 const handleProposal = async (data: Message) => {
-    console.log(data);
-
     if (isPhotoParameterExist(data)) {
         const photo = data.photo?.at(-1);
 
@@ -245,7 +235,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             'Request is determined as meme proposal... Proceeding with media...',
         );
 
-        return await proceedWithMemeProposal(body);
+        return await proceedWithMemeProposal(body).then(() =>
+            bot.sendMessage(
+                body.message.chat.id,
+                'Your proposal has been sent to the meme-bot team. We will review it. Thank you for your contribution!',
+            ),
+        );
     }
 
     const isAdminAction = isMessageIsCallbackQuery(body);
