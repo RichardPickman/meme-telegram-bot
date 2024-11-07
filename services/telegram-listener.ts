@@ -235,12 +235,21 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             'Request is determined as meme proposal... Proceeding with media...',
         );
 
-        return await proceedWithMemeProposal(body).then(() =>
-            bot.sendMessage(
-                body.message.chat.id,
-                'Your proposal has been sent to the meme-bot team. We will review it. Thank you for your contribution!',
-            ),
-        );
+        return await proceedWithMemeProposal(body)
+            .then(() =>
+                bot.sendMessage(
+                    body.message.chat.id,
+                    'Your proposal has been sent to the meme-bot team. We will review it. Thank you for your contribution!',
+                ),
+            )
+            .catch((err) => {
+                console.log(err);
+
+                return bot.sendMessage(
+                    body.message.chat.id,
+                    'Something went wrong. Please try again later.',
+                );
+            });
     }
 
     const isAdminAction = isMessageIsCallbackQuery(body);
