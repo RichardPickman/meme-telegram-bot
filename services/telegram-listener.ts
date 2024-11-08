@@ -71,6 +71,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
                 body.message.chat.id,
                 'Your meme has been sent to meme admins. Thanks for contribution!',
             );
+
+            return SUCCESSFUL_RESPONSE;
         }
     }
 
