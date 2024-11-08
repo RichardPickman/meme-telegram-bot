@@ -55,21 +55,23 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             'Request is determined as meme proposal... Proceeding with media...',
         );
 
-        return await proceedWithMemeProposal(body)
-            .then(() =>
-                bot.sendMessage(
-                    body.message.chat.id,
-                    'Your proposal has been sent to the meme-bot team. We will review it. Thank you for your contribution!',
-                ),
-            )
-            .catch((err) => {
-                console.log(err);
+        const proposalResponse = await proceedWithMemeProposal(body);
 
-                return bot.sendMessage(
-                    body.message.chat.id,
-                    'Something went wrong. Please try again later.',
-                );
-            });
+        if (proposalResponse.status === 'error') {
+            await bot.sendMessage(
+                body.message.chat.id,
+                proposalResponse.message,
+            );
+
+            return ErrorResponse(proposalResponse.message);
+        }
+
+        if (proposalResponse.status === 'success') {
+            await bot.sendMessage(
+                body.message.chat.id,
+                'Your meme has been sent to meme admins. Thanks for contribution!',
+            );
+        }
     }
 
     const isAdminAction = isMessageIsCallbackQuery(body);
