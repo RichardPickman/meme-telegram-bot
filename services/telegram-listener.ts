@@ -45,14 +45,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('Invalid event');
     }
 
-    const message = body.message;
-
-    if (!message) {
-        console.log('Message property is missing.');
-
-        return ErrorResponse('No message present');
-    }
-
     // Check chat type presence
     const isMemeProposal = isMessageContainPrivateChatType(body.message);
     const hasMedia = isMessageContainImageOrVideo(body);
