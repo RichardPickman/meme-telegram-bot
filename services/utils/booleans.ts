@@ -7,6 +7,7 @@ import { Message, Update } from 'node-telegram-bot-api';
 
     @returns boolean
 */
+
 export const isMessageContainPrivateChatType = (
     message: Message | undefined,
 ) => {
