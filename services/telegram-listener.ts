@@ -1,7 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { proceedWithAdminAction } from './actions/admin';
 import { proceedWithMemeProposal } from './actions/proposal';
-import { bot } from './instanses';
 import {
     isMessageContainImageOrVideo,
     isMessageContainPrivateChatType,
@@ -69,25 +68,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             'Request is determined as meme proposal... Proceeding with media...',
         );
 
-        const proposalResponse = await proceedWithMemeProposal(body);
-
-        if (proposalResponse.status === 'error') {
-            await bot.sendMessage(
-                body.message.chat.id,
-                proposalResponse.message,
-            );
-
-            return ErrorResponse(proposalResponse.message);
-        }
-
-        if (proposalResponse.status === 'success') {
-            await bot.sendMessage(
-                body.message.chat.id,
-                'Your meme has been sent to meme admins. Thanks for contribution!',
-            );
-
-            return SUCCESSFUL_RESPONSE;
-        }
+        return await proceedWithMemeProposal(body);
     }
 
     const isAdminAction = isMessageIsCallbackQuery(body);
