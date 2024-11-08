@@ -1,0 +1,39 @@
+name: Branch-Specific Workflow
+
+on:
+    push:
+        branches: ['master', 'testing']
+
+jobs:
+    master-job:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/master'
+        steps:
+            - uses: actions/checkout@v3
+            - run: echo "This job runs only for the master branch"
+
+    testing-job:
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/testing'
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION: eu-west-2
+            TESTING_BOT_TOKEN: ${{ secrets.TESTING_BOT_TOKEN }}
+            TESTING_PROPOSAL_CHANNEL_ID: ${{ secrets.TESTING_PROPOSAL_CHANNEL_ID }}
+            TESTING_MEME_CHANNEL_ID: ${{ secrets.TESTING_MEME_CHANNEL_ID }}
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            TELEGRAM_PROPOSAL_CHANNEL_ID: ${{ secrets.TELEGRAM_PROPOSAL_CHANNEL_ID }}
+            TELEGRAM_MEME_CHANNEL_ID: ${{ secrets.TELEGRAM_MEME_CHANNEL_ID }}
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Deploy to Testing
+              run: |
+                  echo "TELEGRAM_BOT_TOKEN=$TESTING_BOT_TOKEN" >> .env;
+                  echo "TELEGRAM_PROPOSAL_CHANNEL_ID=$TESTING_PROPOSAL_CHANNEL_ID" >> .env;
+                  echo "TELEGRAM_MEME_CHANNEL_ID=$TESTING_MEME_CHANNEL_ID" >> .env;
+                  npm install -g aws-cdk;
+                  npm install;
+                  cdk bootstrap;
+                  npx cdk deploy MemeTelegramBotStack-testing --require-approval never;
