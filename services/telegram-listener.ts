@@ -53,12 +53,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('No message present');
     }
 
-    if (message.sender_chat || message.channel_post) {
-        return ErrorResponse(
-            'Sender chat or channel post detected. Conducting an early return',
-        );
-    }
-
     // Check chat type presence
     const isMemeProposal = isMessageContainPrivateChatType(body.message);
     const hasMedia = isMessageContainImageOrVideo(body);
