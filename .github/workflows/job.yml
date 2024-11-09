@@ -1,20 +1,13 @@
 name: Branch-Specific Workflow
 
 on:
-    push:
-        branches: ['master', 'testing']
+    pull_request:
+        branches:
+            - testing
 
 jobs:
-    master-job:
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/master'
-        steps:
-            - uses: actions/checkout@v3
-            - run: echo "This job runs only for the master branch"
-
     testing-job:
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/testing'
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -26,8 +19,6 @@ jobs:
             TELEGRAM_PROPOSAL_CHANNEL_ID: ${{ secrets.TELEGRAM_PROPOSAL_CHANNEL_ID }}
             TELEGRAM_MEME_CHANNEL_ID: ${{ secrets.TELEGRAM_MEME_CHANNEL_ID }}
         steps:
-            - uses: actions/checkout@v3
-
             - name: Deploy to Testing
               run: |
                   echo "TELEGRAM_BOT_TOKEN=$TESTING_BOT_TOKEN" >> .env;
