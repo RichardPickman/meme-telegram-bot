@@ -1,4 +1,4 @@
-import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
@@ -7,6 +7,9 @@ import {
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_MEME_CHANNEL_ID,
     TELEGRAM_PROPOSAL_CHANNEL_ID,
+    TESTING_BOT_TOKEN,
+    TESTING_MEME_CHANNEL_ID,
+    TESTING_PROPOSAL_CHANNEL_ID,
 } from './environments';
 import { commonLambdaProps, rootDir } from './helpers';
 
@@ -23,9 +26,9 @@ const envVars = {
         TELEGRAM_MEME_CHANNEL_ID: TELEGRAM_MEME_CHANNEL_ID!,
     },
     testing: {
-        TELEGRAM_BOT_TOKEN: TELEGRAM_BOT_TOKEN!,
-        TELEGRAM_PROPOSAL_CHANNEL_ID: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-        TELEGRAM_MEME_CHANNEL_ID: TELEGRAM_MEME_CHANNEL_ID!,
+        TELEGRAM_BOT_TOKEN: TESTING_BOT_TOKEN!,
+        TELEGRAM_PROPOSAL_CHANNEL_ID: TESTING_PROPOSAL_CHANNEL_ID!,
+        TELEGRAM_MEME_CHANNEL_ID: TESTING_MEME_CHANNEL_ID!,
     },
 };
 
@@ -64,10 +67,5 @@ export class MemeTelegramBotStack extends Stack {
             'POST',
             new LambdaIntegration(memeTelegramBotHandler),
         );
-
-        new CfnOutput(this, 'Api address', {
-            value: proposeMeme.path,
-            exportName: 'RootApiAddress',
-        });
     }
 }
