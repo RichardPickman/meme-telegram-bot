@@ -215,11 +215,18 @@ const proceedWithMemeProposal = async (body: Body) => {
     return SUCCESSFUL_RESPONSE;
 };
 
-const cleanUpAfterAction = async (memeId: string, controlsId: number) => {
+const cleanUpAfterAction = async (
+    memeId: number,
+    controlsId: number,
+    caption: 'Approved' | 'Declined',
+) => {
     console.log('Cleaning up after action...');
 
     try {
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, Number(memeId));
+        await bot.editMessageCaption(caption, {
+            chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            message_id: memeId,
+        });
 
         await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
 
@@ -285,8 +292,9 @@ const proceedWithAdminAction = async (
         }
 
         await cleanUpAfterAction(
-            messageId,
+            Number(messageId),
             body.callback_query.message.message_id,
+            'Approved',
         );
 
         return SUCCESSFUL_RESPONSE;
@@ -304,8 +312,9 @@ const proceedWithAdminAction = async (
         });
 
         await cleanUpAfterAction(
-            messageId,
+            Number(messageId),
             body.callback_query.message.message_id,
+            'Declined',
         );
 
         return SUCCESSFUL_RESPONSE;
