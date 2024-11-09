@@ -218,7 +218,7 @@ const proceedWithMemeProposal = async (body: Body) => {
 const cleanUpAfterAction = async (
     memeId: number,
     controlsId: number,
-    caption: 'approved' | 'declined',
+    caption: 'Approved' | 'Declined',
 ) => {
     console.log('Cleaning up after action...');
 
@@ -294,7 +294,7 @@ const proceedWithAdminAction = async (
         await cleanUpAfterAction(
             Number(messageId),
             body.callback_query.message.message_id,
-            'approved',
+            'Approved',
         );
 
         return SUCCESSFUL_RESPONSE;
@@ -314,7 +314,7 @@ const proceedWithAdminAction = async (
         await cleanUpAfterAction(
             Number(messageId),
             body.callback_query.message.message_id,
-            'declined',
+            'Declined',
         );
 
         return SUCCESSFUL_RESPONSE;
