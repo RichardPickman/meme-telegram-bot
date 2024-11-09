@@ -1,4 +1,4 @@
-name: Branch-Specific Workflow
+name: Master pull request workflow
 
 on:
     pull_request:
