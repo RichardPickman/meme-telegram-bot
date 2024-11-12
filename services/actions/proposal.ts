@@ -10,8 +10,6 @@ import {
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
 const handleProposal = async (data: Message) => {
-    console.log(data);
-
     if (isPhotoParameterExist(data)) {
         const photo = data.photo?.at(-1);
 
@@ -50,7 +48,7 @@ const handleProposal = async (data: Message) => {
         return SuccessfullResponse();
     }
 
-    console.log('Data format is invalid.');
+    console.log('Proposal handler finished... No suitable action found.');
 
     return ErrorResponse('Data format is invalid.');
 };
