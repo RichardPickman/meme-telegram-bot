@@ -70,6 +70,8 @@ export const proceedWithAdminAction = async (
     }
 
     if (action === 'approve') {
+        console.log('Action is approved. Proceeding with sending...');
+
         await bot.forwardMessage(
             TELEGRAM_MEME_CHANNEL_ID!,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
@@ -102,6 +104,8 @@ export const proceedWithAdminAction = async (
     }
 
     if (action === 'decline') {
+        console.log('Action is approved. Proceeding with sending...');
+
         await bot.answerCallbackQuery(body.callback_query.id, {
             text: 'Got you boss, I will not send this one 🫡',
         });
