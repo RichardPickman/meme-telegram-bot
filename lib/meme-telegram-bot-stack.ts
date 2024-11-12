@@ -60,10 +60,9 @@ export class MemeTelegramBotStack extends Stack {
             restApiName: 'MemeTelegramBot',
         });
 
-        const commandsAddress = api.root.addResource('commands');
-        const proposeMeme = commandsAddress.addResource('propose-meme');
+        const commandsAddress = api.root;
 
-        proposeMeme.addMethod(
+        commandsAddress.addMethod(
             'POST',
             new LambdaIntegration(memeTelegramBotHandler),
         );
