@@ -13,7 +13,7 @@ export const isAdmin = async (id: number, channelId: string) => {
 
     return Boolean(hasAdmin);
 };
-export const isMessageContainImageOrVideo = (body: Update) =>
+export const isActionContainChannelPostOrMessage = (body: Update) =>
     [isForwardedMessage(body), isMessage(body)].some(Boolean);
 
 export const isMessageIsCallbackQuery = (body: Update) =>

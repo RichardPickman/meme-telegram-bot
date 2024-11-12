@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { proceedWithAdminAction } from './actions/admin';
 import { proceedWithMemeProposal } from './actions/proposal';
 import {
-    isMessageContainImageOrVideo,
+    isActionContainChannelPostOrMessage,
     isMessageContainPrivateChatType,
     isMessageIsCallbackQuery,
 } from './utils/booleans';
@@ -38,9 +38,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     // Check chat type presence
     const isMemeProposal = isMessageContainPrivateChatType(body.message);
-    const hasMedia = isMessageContainImageOrVideo(body);
+    const isSuitableAction = isActionContainChannelPostOrMessage(body);
 
-    if (isMemeProposal && hasMedia) {
+    if (isMemeProposal && isSuitableAction) {
         console.log(
             'Request is determined as meme proposal... Proceeding with media...',
         );
