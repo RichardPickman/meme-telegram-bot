@@ -28,8 +28,6 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const body = getBodyOrNull(event);
 
-    console.log('This is BODY: ', body);
-
     if (!body) {
         console.log('Invalid event');
 
