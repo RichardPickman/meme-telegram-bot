@@ -34,6 +34,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('Invalid event');
     }
 
+    console.log('Proceed with body: ', body);
+
     // Check chat type presence
     const isMemeProposal = isMessageContainPrivateChatType(body.message);
     const hasMedia = isMessageContainImageOrVideo(body);
