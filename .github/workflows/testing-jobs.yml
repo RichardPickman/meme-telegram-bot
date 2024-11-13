@@ -22,4 +22,4 @@ jobs:
                   npm install -g aws-cdk;
                   npm install;
                   cdk bootstrap;
-                  npx cdk deploy MemeTelegramBotStack-testing --require-approval never;
+                  cdk deploy --require-approval never;
