@@ -3,6 +3,7 @@ import { bot } from '../instances/bot';
 
 export const isPhotoParameterExist = (data: Message) => 'photo' in data;
 export const isVideoParameterExist = (data: Message) => 'video' in data;
+export const isDocumentParameterExist = (data: Message) => 'document' in data;
 
 export const isForwardedMessage = (body: Update) => 'channel_post' in body;
 export const isMessage = (body: Update) => 'message' in body;
