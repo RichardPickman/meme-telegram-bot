@@ -14,11 +14,13 @@ export const isAdmin = async (id: number, channelId: string) => {
 
     return Boolean(hasAdmin);
 };
+
 export const isActionContainChannelPostOrMessage = (body: Update) =>
     [isForwardedMessage(body), isMessage(body)].some(Boolean);
 
 export const isMessageIsCallbackQuery = (body: Update) =>
     'callback_query' in body;
+
 export const isMessageContainPrivateChatType = (
     message: Message | undefined,
 ) => {
@@ -29,4 +31,5 @@ export const isMessageContainPrivateChatType = (
     }
 
     return false;
+    a;
 };
