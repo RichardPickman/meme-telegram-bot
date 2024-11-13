@@ -4,6 +4,8 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import path from 'path';
 import {
+    isProductionVariablesSet,
+    isTestingVariablesSet,
     TELEGRAM_BOT_TOKEN,
     TELEGRAM_MEME_CHANNEL_ID,
     TELEGRAM_PROPOSAL_CHANNEL_ID,
@@ -14,10 +16,6 @@ import {
 import { commonLambdaProps, rootDir } from './helpers';
 
 const lambdaPath = path.join(rootDir, 'services');
-
-if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_PROPOSAL_CHANNEL_ID) {
-    throw new Error('One or more environmental variables are not set');
-}
 
 const envVars = {
     production: {
@@ -43,6 +41,26 @@ export class MemeTelegramBotStack extends Stack {
         }
 
         const stageName = stage[1] as 'testing' | 'production';
+
+        if (stageName === 'testing') {
+            const isTestingVarsAvailable = isTestingVariablesSet();
+
+            if (!isTestingVarsAvailable) {
+                throw new Error(
+                    'Testing environmental variables are not set. Aborting...',
+                );
+            }
+        }
+
+        if (stageName === 'production') {
+            const isProductionVarsAvailable = isProductionVariablesSet();
+
+            if (!isProductionVarsAvailable) {
+                throw new Error(
+                    'Production environmental variables are not set. Aborting...',
+                );
+            }
+        }
 
         const memeTelegramBotHandler = new NodejsFunction(
             this,
