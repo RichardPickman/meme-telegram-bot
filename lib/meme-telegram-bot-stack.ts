@@ -42,7 +42,10 @@ export class MemeTelegramBotStack extends Stack {
 
         const stageName = stage[1] as 'testing' | 'production';
 
-        if (stageName === 'testing') {
+        const isTesting = stageName === 'testing';
+        const isProduction = stageName === 'production';
+
+        if (isTesting && !isProduction) {
             const isTestingVarsAvailable = isTestingVariablesSet();
 
             if (!isTestingVarsAvailable) {
@@ -50,7 +53,9 @@ export class MemeTelegramBotStack extends Stack {
                     'Testing environmental variables are not set. Aborting...',
                 );
             }
-        } else if (stageName === 'production') {
+        }
+
+        if (isProduction && !isTesting) {
             const isProductionVarsAvailable = isProductionVariablesSet();
 
             if (!isProductionVarsAvailable) {
