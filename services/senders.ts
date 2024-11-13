@@ -84,3 +84,26 @@ export const sendVideoToChannel = async (
         return ErrorResponse('Error sending photo');
     }
 };
+
+export const sendDocumentToChannel = async (
+    documentId: string,
+    channelId: string,
+    caption: string = '',
+    isProposal: boolean = true,
+) => {
+    try {
+        const message = await bot.sendDocument(channelId, documentId, {
+            caption,
+        });
+
+        if (isProposal) {
+            await sendProposedMemeControls(message.message_id, channelId);
+        }
+
+        return SuccessfullResponse();
+    } catch (e) {
+        console.log('Error sending photo: ', e);
+
+        return ErrorResponse('Error sending photo');
+    }
+};

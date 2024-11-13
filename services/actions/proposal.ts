@@ -1,7 +1,12 @@
 import { Message, Update } from 'node-telegram-bot-api';
 import { TELEGRAM_PROPOSAL_CHANNEL_ID } from '../../lib/environments';
-import { sendPhotoToChannel, sendVideoToChannel } from '../senders';
 import {
+    sendDocumentToChannel,
+    sendPhotoToChannel,
+    sendVideoToChannel,
+} from '../senders';
+import {
+    isDocumentParameterExist,
     isForwardedMessage,
     isMessage,
     isPhotoParameterExist,
@@ -41,6 +46,24 @@ const handleProposal = async (data: Message) => {
 
         await sendVideoToChannel(
             video.file_id,
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            data.caption,
+        );
+
+        return SuccessfullResponse();
+    }
+
+    if (isDocumentParameterExist(data)) {
+        const document = data.document;
+
+        if (!document) {
+            console.log('No document provided');
+
+            return ErrorResponse('No document provided');
+        }
+
+        await sendDocumentToChannel(
+            document.file_id,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             data.caption,
         );
