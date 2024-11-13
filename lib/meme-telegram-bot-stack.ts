@@ -45,6 +45,13 @@ export class MemeTelegramBotStack extends Stack {
         if (stageName === 'testing') {
             const isTestingVarsAvailable = isTestingVariablesSet();
 
+            console.log(
+                TESTING_BOT_TOKEN,
+                TESTING_MEME_CHANNEL_ID,
+                TESTING_PROPOSAL_CHANNEL_ID,
+                isTestingVariablesSet(),
+            );
+
             if (!isTestingVarsAvailable) {
                 throw new Error(
                     'Testing environmental variables are not set. Aborting...',
