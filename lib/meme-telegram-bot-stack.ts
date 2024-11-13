@@ -42,10 +42,7 @@ export class MemeTelegramBotStack extends Stack {
 
         const stageName = stage[1] as 'testing' | 'production';
 
-        const isTesting = stageName === 'testing';
-        const isProduction = stageName === 'production';
-
-        if (isTesting && !isProduction) {
+        if (stageName === 'testing') {
             const isTestingVarsAvailable = isTestingVariablesSet();
 
             if (!isTestingVarsAvailable) {
@@ -55,7 +52,7 @@ export class MemeTelegramBotStack extends Stack {
             }
         }
 
-        if (isProduction && !isTesting) {
+        if (stageName === 'production') {
             const isProductionVarsAvailable = isProductionVariablesSet();
 
             if (!isProductionVarsAvailable) {
