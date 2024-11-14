@@ -107,3 +107,17 @@ export const sendDocumentToChannel = async (
         return ErrorResponse('Error sending photo');
     }
 };
+
+export const sendMessage = async (text: string, chatId: number) => {
+    console.log('Sending feedback...');
+
+    try {
+        const message = await bot.sendMessage(chatId, text);
+
+        return SuccessfullResponse();
+    } catch (e) {
+        console.log('Error sending feedback. Error: ', e);
+
+        return ErrorResponse('Error sending feedback');
+    }
+};
