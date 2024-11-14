@@ -15,6 +15,9 @@ import {
 } from '../utils/booleans';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
+const feedbackMessage =
+    'Thanks for your contribution. We will review it as soon as possible.';
+
 const handleProposal = async (data: Message) => {
     if (isPhotoParameterExist(data)) {
         const photo = data.photo?.at(-1);
@@ -33,10 +36,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(
-            'Thanks for your contribution. We will review it as soon as possible.',
-            data.chat.id,
-        );
+        await sendMessage(feedbackMessage, data.chat.id);
 
         return SuccessfullResponse();
     }
@@ -56,10 +56,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(
-            'Thanks for your contribution. We will review it as soon as possible.',
-            data.chat.id,
-        );
+        await sendMessage(feedbackMessage, data.chat.id);
 
         return SuccessfullResponse();
     }
@@ -79,10 +76,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(
-            'Thanks for your contribution. We will review it as soon as possible.',
-            data.chat.id,
-        );
+        await sendMessage(feedbackMessage, data.chat.id);
 
         return SuccessfullResponse();
     }
