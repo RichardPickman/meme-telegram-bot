@@ -2,6 +2,7 @@ import { Message, Update } from 'node-telegram-bot-api';
 import { TELEGRAM_PROPOSAL_CHANNEL_ID } from '../../lib/environments';
 import {
     sendDocumentToChannel,
+    sendMessage,
     sendPhotoToChannel,
     sendVideoToChannel,
 } from '../senders';
@@ -32,6 +33,11 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
+        await sendMessage(
+            'Thanks for your contribution. We will review it as soon as possible.',
+            data.chat.id,
+        );
+
         return SuccessfullResponse();
     }
 
@@ -50,6 +56,11 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
+        await sendMessage(
+            'Thanks for your contribution. We will review it as soon as possible.',
+            data.chat.id,
+        );
+
         return SuccessfullResponse();
     }
 
@@ -66,6 +77,11 @@ const handleProposal = async (data: Message) => {
             document.file_id,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             data.caption,
+        );
+
+        await sendMessage(
+            'Thanks for your contribution. We will review it as soon as possible.',
+            data.chat.id,
         );
 
         return SuccessfullResponse();
