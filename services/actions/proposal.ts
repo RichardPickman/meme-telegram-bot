@@ -16,39 +16,113 @@ import {
     isPhotoParameterExist,
     isVideoParameterExist,
 } from '../utils/booleans';
+import { getMediaDataFromMessage } from '../utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 import { getMessageId, saveGroupData } from './saveMediaGroup';
 
 const feedbackMessage =
     'Thanks for your contribution. We will review it as soon as possible.';
 
-type MediaDataOutput = {
-    type: 'photo' | 'video';
-    media: string;
-};
+const handlePostedMediaGroup = async (
+    savedMessageId: number,
+    data: Message,
+) => {
+    console.log('Message id found: ', savedMessageId);
 
-const getMediaDataFromMessage = (message: Message): MediaDataOutput | null => {
-    if (message.photo) {
-        const photo = message.photo.at(-1);
+    try {
+        const mediaData = getMediaDataFromMessage(data);
 
-        if (!photo) {
-            return null;
+        if (!mediaData) {
+            console.log('No media id provided');
+
+            return ErrorResponse('No media id provided');
         }
 
-        return {
-            type: 'photo',
-            media: photo.file_id,
-        };
+        await bot.editMessageMedia(mediaData, {
+            message_id: savedMessageId,
+            chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        });
+
+        return SuccessfullResponse();
+    } catch (error) {
+        console.log('Error editing message media: ', error);
+
+        return ErrorResponse('Error editing message media');
+    }
+};
+
+const handleNewMediaGroup = async (data: Message) => {
+    console.log('No message id found. Proceeding with saving message media...');
+
+    const mediaGroupId = data.media_group_id;
+
+    if (!mediaGroupId) {
+        console.log('No media group id provided');
+
+        return ErrorResponse('No media group id provided');
     }
 
-    if (message.video) {
-        return {
-            type: 'video',
-            media: message.video?.file_id,
-        };
+    if (data.photo) {
+        const message = await sendPhotoToChannel(
+            data,
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        );
+
+        if (!message) {
+            console.log('Error sending photo');
+
+            return ErrorResponse('Error sending photo');
+        }
+
+        const response = await saveGroupData(mediaGroupId, message.message_id);
+
+        if (!response) {
+            console.log('Error saving media group data');
+
+            return ErrorResponse('Error saving media group data');
+        }
+
+        await sendProposedMemeControls(
+            message.message_id,
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        );
+
+        console.log('Media group data saved. Response: ', response);
+
+        return SuccessfullResponse();
     }
 
-    return null;
+    if (data.video) {
+        const message = await sendVideoToChannel(
+            data,
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        );
+
+        if (!message) {
+            console.log('Error sending video');
+
+            return ErrorResponse('Error sending video');
+        }
+
+        const response = await saveGroupData(mediaGroupId, message.message_id);
+
+        if (!response) {
+            console.log('Error saving media group data');
+
+            return ErrorResponse('Error saving media group data');
+        }
+
+        console.log('Media group data saved. Response: ', response);
+
+        await sendProposedMemeControls(
+            message.message_id,
+            TELEGRAM_PROPOSAL_CHANNEL_ID!,
+        );
+
+        return SuccessfullResponse();
+    }
+
+    return SuccessfullResponse();
 };
 
 const handleMediaGroup = async (data: Message) => {
@@ -65,105 +139,11 @@ const handleMediaGroup = async (data: Message) => {
     const savedMessageId = await getMessageId(mediaGroupId);
 
     if (savedMessageId) {
-        console.log('Message id found: ', savedMessageId);
-
-        const mediaData = getMediaDataFromMessage(data);
-
-        if (!mediaData) {
-            console.log('No media id provided');
-
-            return ErrorResponse('No media id provided');
-        }
-
-        await bot.editMessageMedia(mediaData, {
-            message_id: savedMessageId,
-            chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-        });
+        return await handlePostedMediaGroup(savedMessageId, data);
     }
 
     if (!savedMessageId) {
-        console.log(
-            'No message id found. Proceeding with saving message media...',
-        );
-
-        let message: Message | null;
-
-        if (data.photo) {
-            const photo = data.photo?.at(-1);
-
-            if (!photo) {
-                console.log('No photo provided');
-
-                return ErrorResponse('No photo provided');
-            }
-
-            message = await sendPhotoToChannel(
-                photo.file_id,
-                TELEGRAM_PROPOSAL_CHANNEL_ID!,
-                data.caption,
-                false,
-            );
-
-            if (!message) {
-                console.log('Error sending photo');
-
-                return ErrorResponse('Error sending photo');
-            }
-
-            const response = await saveGroupData(
-                mediaGroupId,
-                message.message_id,
-            );
-
-            if (!response) {
-                console.log('Error saving media group data');
-
-                return ErrorResponse('Error saving media group data');
-            }
-
-            await sendProposedMemeControls(
-                message.message_id,
-                String(data.chat.id),
-            );
-
-            console.log('Media group data saved. Response: ', response);
-        }
-
-        if (data.video) {
-            const video = data.video;
-
-            if (!video) {
-                console.log('No video provided');
-
-                return ErrorResponse('No video provided');
-            }
-
-            message = await sendVideoToChannel(
-                video.file_id,
-                TELEGRAM_PROPOSAL_CHANNEL_ID!,
-                data.caption,
-                false,
-            );
-
-            if (!message) {
-                console.log('Error sending video');
-
-                return ErrorResponse('Error sending video');
-            }
-
-            const response = await saveGroupData(
-                mediaGroupId,
-                message.message_id,
-            );
-
-            if (!response) {
-                console.log('Error saving media group data');
-
-                return ErrorResponse('Error saving media group data');
-            }
-
-            console.log('Media group data saved. Response: ', response);
-        }
+        return await handleNewMediaGroup(data);
     }
 
     return SuccessfullResponse();
@@ -177,20 +157,9 @@ const handleProposal = async (data: Message) => {
     }
 
     if (isPhotoParameterExist(data)) {
-        const photo = data.photo?.at(-1);
-
-        if (!photo) {
-            console.log('No photo provided');
-
-            return ErrorResponse('No photo provided');
-        }
-
-        const photoId = photo.file_id;
-
-        await sendPhotoToChannel(
-            photoId,
+        const message = await sendPhotoToChannel(
+            data,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
         );
 
         await sendMessage(feedbackMessage, data.chat.id);
@@ -199,18 +168,9 @@ const handleProposal = async (data: Message) => {
     }
 
     if (isVideoParameterExist(data)) {
-        const video = data.video;
-
-        if (!video) {
-            console.log('No video provided');
-
-            return ErrorResponse('No video provided');
-        }
-
-        await sendVideoToChannel(
-            video.file_id,
+        const message = await sendVideoToChannel(
+            data,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
         );
 
         await sendMessage(feedbackMessage, data.chat.id);
@@ -219,18 +179,9 @@ const handleProposal = async (data: Message) => {
     }
 
     if (isDocumentParameterExist(data)) {
-        const document = data.document;
-
-        if (!document) {
-            console.log('No document provided');
-
-            return ErrorResponse('No document provided');
-        }
-
-        await sendDocumentToChannel(
-            document.file_id,
+        const message = await sendDocumentToChannel(
+            data,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
         );
 
         await sendMessage(feedbackMessage, data.chat.id);
