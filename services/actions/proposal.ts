@@ -124,6 +124,41 @@ const handleMediaGroup = async (data: Message) => {
 
             console.log('Media group data saved. Response: ', response);
         }
+
+        if (data.video) {
+            const video = data.video;
+
+            if (!video) {
+                console.log('No video provided');
+
+                return ErrorResponse('No video provided');
+            }
+
+            message = await sendVideoToChannel(
+                video.file_id,
+                TELEGRAM_PROPOSAL_CHANNEL_ID!,
+                data.caption,
+                false,
+            );
+
+            if (!message) {
+                console.log('Error sending video');
+
+                return ErrorResponse('Error sending video');
+            }
+
+            const response = await saveGroupData(
+                mediaGroupId,
+                message.message_id,
+            );
+
+            if (!response) {
+                console.log('Error saving media group data');
+
+                return ErrorResponse('Error saving media group data');
+            }
+            console.log('Media group data saved. Response: ', response);
+        }
     }
 
     return SuccessfullResponse();
