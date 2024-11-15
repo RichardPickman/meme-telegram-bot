@@ -18,10 +18,7 @@ export const saveGroupData = async (
 
     const putCommand = new PutCommand({
         TableName: MEDIA_TABLE_NAME,
-        Item: {
-            mediaGroupId,
-            messageId,
-        },
+        Item: { mediaGroupId, messageId },
     });
 
     try {
@@ -40,9 +37,7 @@ export const getMessageId = async (mediaGroupId: string) => {
 
     const getCommand = new GetCommand({
         TableName: MEDIA_TABLE_NAME,
-        Key: {
-            mediaGroupId,
-        },
+        Key: { mediaGroupId },
     });
 
     try {
