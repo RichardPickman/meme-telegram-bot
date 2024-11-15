@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { inspect } from 'util';
 import { proceedWithAdminAction } from './actions/admin';
 import { proceedWithMemeProposal } from './actions/proposal';
 import {
@@ -34,7 +35,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return ErrorResponse('Invalid event');
     }
 
-    console.log('Proceed with body: ', body);
+    console.log(
+        'Proceed with body: ',
+        inspect(body, {
+            depth: Infinity,
+        }),
+    );
 
     // Check chat type presence
     const isMemeProposal = isMessageContainPrivateChatType(body.message);
