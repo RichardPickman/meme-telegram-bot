@@ -77,7 +77,7 @@ const handleMediaGroup = async (data: Message) => {
 
         const updatedMessage = await bot.editMessageMedia(mediaData, {
             message_id: savedMessageId,
-            chat_id: savedMessageId,
+            chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
         });
 
         return updatedMessage;
