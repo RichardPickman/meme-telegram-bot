@@ -15,12 +15,12 @@ export class MemeTelegramBotStack extends Stack {
         const groupMediaDatabase = new Table(this, 'GroupMediaTableBot', {
             tableName: 'GroupMediaTableBot',
             partitionKey: {
-                name: 'messageId',
-                type: AttributeType.NUMBER,
-            },
-            sortKey: {
                 name: 'mediaGroupId',
                 type: AttributeType.STRING,
+            },
+            sortKey: {
+                name: 'messageId',
+                type: AttributeType.NUMBER,
             },
         });
 
