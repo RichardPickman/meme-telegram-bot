@@ -54,11 +54,11 @@ export const sendPhotoToChannel = async (
             await sendProposedMemeControls(message.message_id, channelId);
         }
 
-        return SuccessfullResponse();
+        return message;
     } catch (e) {
         console.log('Error sending photo: ', e);
 
-        return ErrorResponse('Error sending photo');
+        return null;
     }
 };
 
@@ -77,11 +77,11 @@ export const sendVideoToChannel = async (
             await sendProposedMemeControls(message.message_id, channelId);
         }
 
-        return SuccessfullResponse();
+        return message;
     } catch (e) {
         console.log('Error sending photo: ', e);
 
-        return ErrorResponse('Error sending photo');
+        return null;
     }
 };
 
@@ -100,11 +100,11 @@ export const sendDocumentToChannel = async (
             await sendProposedMemeControls(message.message_id, channelId);
         }
 
-        return SuccessfullResponse();
+        return message;
     } catch (e) {
         console.log('Error sending photo: ', e);
 
-        return ErrorResponse('Error sending photo');
+        return null;
     }
 };
 
@@ -114,7 +114,7 @@ export const sendMessage = async (text: string, chatId: number) => {
     try {
         const message = await bot.sendMessage(chatId, text);
 
-        return SuccessfullResponse();
+        return message;
     } catch (e) {
         console.log('Error sending feedback. Error: ', e);
 
