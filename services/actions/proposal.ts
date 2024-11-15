@@ -75,12 +75,10 @@ const handleMediaGroup = async (data: Message) => {
             return ErrorResponse('No media id provided');
         }
 
-        const updatedMessage = await bot.editMessageMedia(mediaData, {
+        await bot.editMessageMedia(mediaData, {
             message_id: savedMessageId,
             chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
         });
-
-        return updatedMessage;
     }
 
     if (!savedMessageId) {
