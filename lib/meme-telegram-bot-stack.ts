@@ -1,5 +1,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import path from 'path';
@@ -10,6 +11,18 @@ const lambdaPath = path.join(rootDir, 'services');
 export class MemeTelegramBotStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
+
+        const groupMediaDatabase = new Table(this, 'GroupMediaTableBot', {
+            tableName: 'GroupMediaTableBot',
+            partitionKey: {
+                name: 'messageId',
+                type: AttributeType.NUMBER,
+            },
+            sortKey: {
+                name: 'mediaGroupId',
+                type: AttributeType.STRING,
+            },
+        });
 
         const memeTelegramBotHandler = new NodejsFunction(
             this,
@@ -26,6 +39,8 @@ export class MemeTelegramBotStack extends Stack {
                 },
             },
         );
+
+        groupMediaDatabase.grantReadWriteData(memeTelegramBotHandler);
 
         const api = new RestApi(this, 'MemeTelegramBot', {
             restApiName: 'MemeTelegramBot',
