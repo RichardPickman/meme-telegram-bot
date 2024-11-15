@@ -28,7 +28,7 @@ export const getMediaDataFromMessage = (
     if (message.video) {
         return {
             type: 'video',
-            media: message.video?.file_id,
+            media: message.video.file_id,
         };
     }
 
