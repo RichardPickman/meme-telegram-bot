@@ -35,13 +35,13 @@ export const saveGroupData = async (
     }
 };
 
-export const getMessageId = async (mediaId: string) => {
+export const getMessageId = async (mediaGroupId: string) => {
     console.log('Getting message id...');
 
     const getCommand = new GetCommand({
         TableName: MEDIA_TABLE_NAME,
         Key: {
-            mediaId,
+            mediaGroupId,
         },
     });
 
