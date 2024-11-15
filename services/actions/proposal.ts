@@ -141,7 +141,7 @@ const handleProposal = async (data: Message) => {
 
         const photoId = photo.file_id;
 
-        const message = await sendPhotoToChannel(
+        await sendPhotoToChannel(
             photoId,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             data.caption,
