@@ -10,13 +10,16 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 export const MEDIA_TABLE_NAME = process.env.MEDIA_TABLE_NAME || '';
 
-export const saveGroupData = async (mediaId: string, messageId: number) => {
+export const saveGroupData = async (
+    mediaGroupId: string,
+    messageId: number,
+) => {
     console.log('Saving media group data...');
 
     const putCommand = new PutCommand({
         TableName: MEDIA_TABLE_NAME,
         Item: {
-            mediaId,
+            mediaGroupId,
             messageId,
         },
     });
