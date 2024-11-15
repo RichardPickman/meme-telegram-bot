@@ -64,6 +64,8 @@ const handleMediaGroup = async (data: Message) => {
     const savedMessageId = await getMessageId(mediaGroupId);
 
     if (savedMessageId) {
+        console.log('Message id found: ', savedMessageId);
+
         const mediaData = getMediaDataFromMessage(data);
 
         if (!mediaData) {
@@ -81,6 +83,10 @@ const handleMediaGroup = async (data: Message) => {
     }
 
     if (!savedMessageId) {
+        console.log(
+            'No message id found. Proceeding with saving message media...',
+        );
+
         let message: Message | null;
 
         if (data.photo) {
