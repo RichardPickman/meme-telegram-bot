@@ -18,10 +18,6 @@ export class MemeTelegramBotStack extends Stack {
                 name: 'mediaGroupId',
                 type: AttributeType.STRING,
             },
-            sortKey: {
-                name: 'messageId',
-                type: AttributeType.NUMBER,
-            },
         });
 
         const memeTelegramBotHandler = new NodejsFunction(
