@@ -1,5 +1,4 @@
 import { Message, Update } from 'node-telegram-bot-api';
-import { TELEGRAM_PROPOSAL_CHANNEL_ID } from '../../lib/environments';
 import { bot } from '../instances/bot';
 import {
     sendDocumentToChannel,
@@ -22,6 +21,8 @@ import { getMessageId, saveGroupData } from './saveMediaGroup';
 
 const feedbackMessage =
     'Thanks for your contribution. We will review it as soon as possible.';
+
+const TELEGRAM_PROPOSAL_CHANNEL_ID = process.env.TELEGRAM_PROPOSAL_CHANNEL_ID;
 
 const handlePostedMediaGroup = async (
     savedMessageId: number,
