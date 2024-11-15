@@ -135,7 +135,7 @@ export const sendPhotoToChannel = async (data: Message, channelId: string) => {
     const photoId = photo.file_id;
 
     try {
-        const message = await bot.sendPhoto(photoId, channelId, {
+        const message = await bot.sendPhoto(channelId, photoId, {
             caption: data.caption,
         });
 
@@ -159,7 +159,7 @@ export const sendVideoToChannel = async (data: Message, channelId: string) => {
     const videoId = video.file_id;
 
     try {
-        const message = await bot.sendVideo(videoId, channelId, {
+        const message = await bot.sendVideo(channelId, videoId, {
             caption: data.caption,
         });
 
@@ -186,7 +186,7 @@ export const sendDocumentToChannel = async (
     const documentId = document.file_id;
 
     try {
-        const message = await bot.sendDocument(documentId, channelId, {
+        const message = await bot.sendDocument(channelId, documentId, {
             caption: data.caption,
         });
 
