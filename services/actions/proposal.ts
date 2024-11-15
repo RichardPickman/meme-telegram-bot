@@ -5,6 +5,7 @@ import {
     sendDocumentToChannel,
     sendMessage,
     sendPhotoToChannel,
+    sendProposedMemeControls,
     sendVideoToChannel,
 } from '../senders';
 import {
@@ -122,6 +123,11 @@ const handleMediaGroup = async (data: Message) => {
                 return ErrorResponse('Error saving media group data');
             }
 
+            await sendProposedMemeControls(
+                message.message_id,
+                String(data.chat.id),
+            );
+
             console.log('Media group data saved. Response: ', response);
         }
 
@@ -157,6 +163,7 @@ const handleMediaGroup = async (data: Message) => {
 
                 return ErrorResponse('Error saving media group data');
             }
+
             console.log('Media group data saved. Response: ', response);
         }
     }
