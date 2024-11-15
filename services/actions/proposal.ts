@@ -99,7 +99,7 @@ const handleMediaGroup = async (data: Message) => {
             }
 
             message = await sendPhotoToChannel(
-                photo.file_id!,
+                photo.file_id,
                 TELEGRAM_PROPOSAL_CHANNEL_ID!,
                 data.caption,
                 false,
