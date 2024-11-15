@@ -48,7 +48,9 @@ export const getMessageId = async (mediaGroupId: string) => {
     try {
         const response = await docClient.send(getCommand);
 
-        return response.Item?.messageId;
+        const messageId = response.Item?.messageId as number;
+
+        return messageId ?? null;
     } catch (e) {
         console.log('Error getting message id: ', e);
 
