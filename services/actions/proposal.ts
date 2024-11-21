@@ -2,6 +2,7 @@ import { Message, Update } from 'node-telegram-bot-api';
 import { TELEGRAM_PROPOSAL_CHANNEL_ID } from '../../lib/environments';
 import {
     sendDocumentToChannel,
+    sendMessage,
     sendPhotoToChannel,
     sendVideoToChannel,
 } from '../senders';
@@ -13,6 +14,9 @@ import {
     isVideoParameterExist,
 } from '../utils/booleans';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
+
+const feedbackMessage =
+    'Thanks for your contribution. We will review it as soon as possible.';
 
 const handleProposal = async (data: Message) => {
     if (isPhotoParameterExist(data)) {
@@ -32,6 +36,8 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
+        await sendMessage(feedbackMessage, data.chat.id);
+
         return SuccessfullResponse();
     }
 
@@ -50,6 +56,8 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
+        await sendMessage(feedbackMessage, data.chat.id);
+
         return SuccessfullResponse();
     }
 
@@ -67,6 +75,8 @@ const handleProposal = async (data: Message) => {
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             data.caption,
         );
+
+        await sendMessage(feedbackMessage, data.chat.id);
 
         return SuccessfullResponse();
     }
