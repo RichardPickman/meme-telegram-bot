@@ -5,6 +5,7 @@ import {
 } from '../../lib/environments';
 import { bot } from '../instances/bot';
 import { isAdmin } from '../utils/booleans';
+import { getRandomEmoji } from '../utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
 const cleanUpAfterAction = async (
@@ -72,15 +73,30 @@ export const proceedWithAdminAction = async (
     if (action === 'approve') {
         console.log('Action is approved. Proceeding with sending...');
 
-        await bot.forwardMessage(
+        const message = await bot.forwardMessage(
             TELEGRAM_MEME_CHANNEL_ID!,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             Number(messageId),
         );
 
+        if (!message) {
+            console.log('No message provided');
+
+            return ErrorResponse('No message provided');
+        }
+
         await bot.answerCallbackQuery(body.callback_query.id, {
             text: 'Meme sent 🎉',
         });
+
+        const emoji = getRandomEmoji();
+
+        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented
+        await bot.setMessageReaction(
+            TELEGRAM_MEME_CHANNEL_ID!,
+            message.message_id,
+            [{ type: 'emoji', emoji }],
+        );
 
         if (!body.callback_query.message?.message_id) {
             console.log('No message id provided');
