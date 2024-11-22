@@ -91,7 +91,7 @@ export const proceedWithAdminAction = async (
 
         const emoji = getRandomEmoji();
 
-        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented
+        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
         await bot.setMessageReaction(
             TELEGRAM_MEME_CHANNEL_ID!,
             message.message_id,
