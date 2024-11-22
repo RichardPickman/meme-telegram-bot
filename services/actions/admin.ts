@@ -100,7 +100,7 @@ export const proceedWithAdminAction = async (
         const reactionResponse = await bot.setMessageReaction(
             TELEGRAM_MEME_CHANNEL_ID!,
             message.message_id,
-            emoji,
+            { reaction: emoji },
         );
 
         console.log(reactionResponse);
