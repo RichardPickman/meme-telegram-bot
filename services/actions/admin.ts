@@ -89,14 +89,21 @@ export const proceedWithAdminAction = async (
             text: 'Meme sent 🎉',
         });
 
-        const emoji = getRandomEmoji();
+        const emoji = {
+            type: 'emoji',
+            emoji: getRandomEmoji(),
+        };
+
+        console.log(emoji);
 
         // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
-        await bot.setMessageReaction(
+        const reactionResponse = await bot.setMessageReaction(
             TELEGRAM_MEME_CHANNEL_ID!,
             message.message_id,
-            [{ type: 'emoji', emoji }],
+            [emoji],
         );
+
+        console.log(reactionResponse);
 
         if (!body.callback_query.message?.message_id) {
             console.log('No message id provided');
