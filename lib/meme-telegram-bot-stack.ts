@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import path from 'path';
 import { commonLambdaProps, rootDir } from './helpers';
 
-const lambdaPath = path.join(rootDir, 'services');
+const lambdaPath = path.join(rootDir, 'src');
 
 export class MemeTelegramBotStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,7 +16,7 @@ export class MemeTelegramBotStack extends Stack {
             'Meme Telegram Bot',
             {
                 ...commonLambdaProps,
-                entry: path.join(lambdaPath, 'telegram-listener.ts'),
+                entry: path.join(lambdaPath, 'index.ts'),
                 environment: {
                     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN!,
                     TELEGRAM_PROPOSAL_CHANNEL_ID:
