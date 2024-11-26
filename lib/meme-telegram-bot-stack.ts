@@ -53,6 +53,7 @@ export class MemeTelegramBotStack extends Stack {
                         process.env.TELEGRAM_PROPOSAL_CHANNEL_ID!,
                     TELEGRAM_MEME_CHANNEL_ID:
                         process.env.TELEGRAM_MEME_CHANNEL_ID!,
+                    MEME_DATABASE_TABLE_NAME: proposalDb.tableName,
                 },
             },
         );
