@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
@@ -16,13 +16,13 @@ export class MemeTelegramBotStack extends Stack {
 
         const proposalDb = new Table(this, 'MyTable', {
             partitionKey: { name: 'id', type: AttributeType.STRING },
-            sortKey: { name: 'createdAt', type: AttributeType.NUMBER },
+            removalPolicy: RemovalPolicy.DESTROY,
         });
 
         proposalDb.addGlobalSecondaryIndex({
-            indexName: 'CreatedAtIndex',
-            partitionKey: { name: 'id', type: AttributeType.STRING },
-            sortKey: { name: 'createdAt', type: AttributeType.NUMBER },
+            indexName: 'createAt',
+            sortKey: { name: 'id', type: AttributeType.STRING },
+            partitionKey: { name: 'createdAt', type: AttributeType.NUMBER },
         });
 
         const memeTelegramBotHandler = new NodejsFunction(
