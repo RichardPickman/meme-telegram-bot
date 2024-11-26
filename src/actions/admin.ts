@@ -74,7 +74,10 @@ export const proceedWithAdminAction = async (
             process.env.MEME_DATABASE_TABLE_NAME!,
         );
 
-        const newMeme = await saveMeme(messageId, lastMeme?.time ?? new Date());
+        const newMeme = await saveMeme(
+            messageId,
+            lastMeme?.time ?? new Date().toUTCString(),
+        );
 
         if (!newMeme) {
             console.log('No message provided');

@@ -12,7 +12,7 @@ import { dbClient } from '../instances/db';
 type Meme = {
     id: string;
     isPublished: boolean;
-    time: Date;
+    time: string;
     messageId: string;
     createdAt: number;
 };
@@ -71,7 +71,8 @@ export const getLatestSavedMeme = async (TableName: string) => {
     }
 };
 
-const getClosestTimeFrame = (time: Date) => {
+const getClosestTimeFrame = (timeStr: string) => {
+    const time = new Date(timeStr);
     const isPastMid = time.getHours() > 30;
 
     if (isPastMid) {
@@ -79,20 +80,20 @@ const getClosestTimeFrame = (time: Date) => {
         time.setMinutes(0);
         time.setSeconds(0);
 
-        return time;
+        return String(time);
     }
 
     if (!isPastMid) {
         time.setMinutes(30);
         time.setSeconds(0);
 
-        return time;
+        return String(time);
     }
 
-    return time;
+    return String(time);
 };
 
-const constructMeme = (messageId: string, time: Date): Meme => ({
+const constructMeme = (messageId: string, time: string): Meme => ({
     id: randomUUID(),
     messageId,
     isPublished: false,
@@ -100,7 +101,7 @@ const constructMeme = (messageId: string, time: Date): Meme => ({
     createdAt: Date.now(),
 });
 
-export const saveMeme = async (messageId: string, time: Date) => {
+export const saveMeme = async (messageId: string, time: string) => {
     const meme = constructMeme(messageId, time);
 
     const params: PutCommandInput = {
