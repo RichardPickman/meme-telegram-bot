@@ -20,7 +20,7 @@ export class MemeTelegramBotStack extends Stack {
         });
 
         proposalDb.addGlobalSecondaryIndex({
-            indexName: 'createAt',
+            indexName: 'createdAt',
             sortKey: { name: 'id', type: AttributeType.STRING },
             partitionKey: { name: 'createdAt', type: AttributeType.NUMBER },
         });
