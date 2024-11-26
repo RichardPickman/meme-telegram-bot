@@ -48,9 +48,9 @@ export const getLatestSavedMeme = async (TableName: string) => {
 
     const params: QueryCommandInput = {
         TableName,
-        IndexName: 'id',
-        KeyConditionExpression: 'id = :id',
-        ExpressionAttributeValues: marshall({ ':id': randomUUID() }),
+        IndexName: 'createdAt',
+        KeyConditionExpression: 'createdAt = :createdAt',
+        ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
         Limit: 1,
     };
 
