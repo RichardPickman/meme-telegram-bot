@@ -14,6 +14,7 @@ type Meme = {
     isPublished: boolean;
     time: Date;
     messageId: string;
+    createdAt: number;
 };
 
 export const getFirstUnpublishedMeme = async (TableName: string) => {
@@ -43,6 +44,8 @@ export const getFirstUnpublishedMeme = async (TableName: string) => {
 };
 
 export const getLatestSavedMeme = async (TableName: string) => {
+    console.log('Getting latest saved meme...');
+
     const params: QueryCommandInput = {
         TableName,
         IndexName: 'id',
@@ -93,6 +96,7 @@ const constructMeme = (messageId: string, time: Date): Meme => ({
     messageId,
     isPublished: false,
     time: getClosestTimeFrame(time),
+    createdAt: Date.now(),
 });
 
 export const saveMeme = async (messageId: string, time: Date) => {
