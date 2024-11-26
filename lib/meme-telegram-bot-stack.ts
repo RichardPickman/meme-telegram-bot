@@ -44,7 +44,7 @@ export class MemeTelegramBotStack extends Stack {
 
         const memePublisherHandler = new NodejsFunction(
             this,
-            'Meme Telegram Bot',
+            'Meme publisher handler',
             {
                 ...commonLambdaProps,
                 entry: path.join(lambdaPath, 'publishMeme.ts'),
