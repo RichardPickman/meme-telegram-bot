@@ -58,6 +58,8 @@ export class MemeTelegramBotStack extends Stack {
             },
         );
 
+        proposalDb.grantReadWriteData(memePublisherHandler);
+
         const rule = new Rule(this, 'Rule', {
             schedule: Schedule.cron({ minute: '*/30' }),
         });
