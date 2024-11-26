@@ -57,6 +57,7 @@ export class MemeTelegramBotStack extends Stack {
             },
         );
 
+        // Add this comment to restart workflow
         const rule = new Rule(this, 'Rule', {
             schedule: Schedule.cron({ minute: '*/2' }),
         });
