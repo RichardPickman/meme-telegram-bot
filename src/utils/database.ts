@@ -51,6 +51,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         IndexName: 'createdAt',
         KeyConditionExpression: 'createdAt = :createdAt',
         ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
+        ScanIndexForward: false,
         Limit: 1,
     };
 
