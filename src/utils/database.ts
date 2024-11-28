@@ -12,7 +12,7 @@ import { dbClient } from '../instances/db';
 type Meme = {
     id: string;
     isPublished: boolean;
-    time: string;
+    time: Date;
     messageId: string;
     createdAt: number;
 };
@@ -71,29 +71,28 @@ export const getLatestSavedMeme = async (TableName: string) => {
     }
 };
 
-const getClosestTimeFrame = (timeStr: string) => {
-    const time = new Date(timeStr);
-    const isPastMid = time.getHours() > 30;
+const getClosestTimeFrame = (time: Date) => {
+    const isPastMid = time.getMinutes() > 30;
 
     if (isPastMid) {
         time.setHours(time.getHours() + 1);
         time.setMinutes(0);
         time.setSeconds(0);
 
-        return String(time);
+        return time;
     }
 
     if (!isPastMid) {
         time.setMinutes(30);
         time.setSeconds(0);
 
-        return String(time);
+        return time;
     }
 
-    return String(time);
+    return time;
 };
 
-const constructMeme = (messageId: string, time: string): Meme => ({
+const constructMeme = (messageId: string, time: Date): Meme => ({
     id: randomUUID(),
     messageId,
     isPublished: false,
@@ -101,12 +100,12 @@ const constructMeme = (messageId: string, time: string): Meme => ({
     createdAt: Date.now(),
 });
 
-export const saveMeme = async (messageId: string, time: string) => {
+export const saveMeme = async (messageId: string, time: Date) => {
     const meme = constructMeme(messageId, time);
 
     const params: PutCommandInput = {
         TableName: process.env.MEME_DATABASE_TABLE_NAME!,
-        Item: meme,
+        Item: { ...meme, time: new Date(meme.time).toISOString() },
     };
 
     try {
