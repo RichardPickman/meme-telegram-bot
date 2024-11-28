@@ -34,6 +34,8 @@ export const getFirstUnpublishedMeme = async (TableName: string) => {
             return null;
         }
 
+        console.log(data);
+
         const result = unmarshall(data.Items[0]);
 
         return result as Meme;
@@ -61,6 +63,8 @@ export const getLatestSavedMeme = async (TableName: string) => {
         if (!data.Items) {
             return null;
         }
+
+        console.log(data.Items);
 
         const result = unmarshall(data.Items[0]);
 
