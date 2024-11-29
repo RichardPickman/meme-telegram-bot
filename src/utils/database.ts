@@ -46,7 +46,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
             return null;
         }
 
-        if (!data.Items[0]) {
+        if (data.Items.length === 0) {
             console.log('No meme found');
 
             return null;
