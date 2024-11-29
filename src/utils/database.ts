@@ -4,7 +4,7 @@ import {
     PutCommandInput,
     QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
 import { dbClient } from '../instances/db';
 
@@ -41,10 +41,16 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
         const data = await dbClient.send(new QueryCommand(params));
 
         if (!data.Items) {
+            console.log('Items is undefined. No meme present');
+
             return null;
         }
 
-        console.log(data);
+        if (!data.Items[0]) {
+            console.log('No meme found');
+
+            return null;
+        }
 
         const result = unmarshall(data.Items[0]);
 
@@ -62,7 +68,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         TableName,
         IndexName: 'createdAt',
         KeyConditionExpression: 'createdAt = :createdAt',
-        ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
+        ExpressionAttributeValues: { ':createdAt': Date.now() },
         ScanIndexForward: false,
         Limit: 1,
     };
@@ -71,14 +77,20 @@ export const getLatestSavedMeme = async (TableName: string) => {
         const data = await dbClient.send(new QueryCommand(params));
 
         if (!data.Items) {
+            console.log('Items is undefined. No meme present');
+
             return null;
         }
 
-        console.log(data.Items);
+        if (!data.Items[0]) {
+            console.log('No meme found');
+
+            return null;
+        }
 
         const result = unmarshall(data.Items[0]);
 
-        return result as Meme;
+        return { ...result, time: new Date(result.time) } as Meme;
     } catch (error) {
         console.log('Error: ', error);
 
@@ -128,9 +140,7 @@ export const saveMeme = async (messageId: string, time: Date) => {
     };
 
     try {
-        const response = await dbClient.send(new PutCommand(params));
-
-        console.log('Response: ', response);
+        await dbClient.send(new PutCommand(params));
 
         return meme;
     } catch (error) {
