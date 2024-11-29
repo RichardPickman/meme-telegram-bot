@@ -32,13 +32,13 @@ const queryDatabase = async (command: QueryCommandInput) => {
         console.log('Data requested. Response: ', data);
 
         if (!data.Items) {
-            console.log('Items is undefined. No meme present');
+            console.log('Items is undefined.');
 
             return null;
         }
 
         if (data.Items.length === 0) {
-            console.log('No meme found');
+            console.log('No item found');
 
             return null;
         }
