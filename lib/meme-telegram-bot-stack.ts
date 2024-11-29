@@ -22,7 +22,7 @@ export class MemeTelegramBotStack extends Stack {
         proposalDb.addGlobalSecondaryIndex({
             indexName: 'publishTime',
             sortKey: { name: 'id', type: AttributeType.STRING },
-            partitionKey: { name: 'publishTime', type: AttributeType.NUMBER },
+            partitionKey: { name: 'publishTime', type: AttributeType.STRING },
         });
 
         const memeTelegramBotHandler = new NodejsFunction(
