@@ -4,6 +4,7 @@ import {
     PutCommandInput,
     QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
+import { marshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
 import { dbClient } from '../instances/db';
 
@@ -58,9 +59,9 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
     const params: QueryCommandInput = {
         TableName,
         FilterExpression: 'time = :time',
-        ExpressionAttributeValues: {
+        ExpressionAttributeValues: marshall({
             ':time': time.toISOString(),
-        },
+        }),
         Limit: 1,
     };
 
@@ -74,7 +75,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         TableName,
         IndexName: 'createdAt',
         KeyConditionExpression: 'createdAt = :createdAt',
-        ExpressionAttributeValues: { ':createdAt': Date.now() },
+        ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
         ScanIndexForward: false,
         Limit: 1,
     };
