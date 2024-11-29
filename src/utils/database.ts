@@ -7,6 +7,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
+import { inspect } from 'util';
 import { dbClient } from '../instances/db';
 
 type Meme = {
@@ -58,7 +59,15 @@ const scanDatabase = async (command: ScanCommandInput) => {
     try {
         const data = await dbClient.send(new ScanCommand(command));
 
-        console.log('Data requested. Response: ', data);
+        console.log(
+            'Data requested. Response: ',
+            console.log(
+                data,
+                inspect(data, {
+                    depth: Infinity,
+                }),
+            ),
+        );
 
         if (!data.Items) {
             console.log('Items is undefined.');
