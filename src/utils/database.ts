@@ -82,7 +82,11 @@ const scanDatabase = async (command: ScanCommandInput) => {
 };
 
 export const getCurrentTimeFrameMeme = async (TableName: string) => {
+    console.log('Getting current time frame meme...');
+
     const publishTime = getCurrentTimeFrame();
+
+    console.log('Publish time: ', publishTime);
 
     const params: QueryCommandInput = {
         TableName,
