@@ -8,15 +8,8 @@ import {
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
 import { inspect } from 'util';
+import { Meme } from '../../types';
 import { dbClient } from '../instances/db';
-
-type Meme = {
-    id: string;
-    isPublished: boolean;
-    time: Date;
-    messageId: string;
-    createdAt: number;
-};
 
 const getCurrentTimeFrame = () => {
     const time = new Date();
@@ -161,6 +154,8 @@ const constructMeme = (messageId: string, time: Date): Meme => ({
 });
 
 export const saveMeme = async (messageId: string, time: Date) => {
+    console.log('Saving meme...');
+
     const meme = constructMeme(messageId, time);
 
     const params: PutCommandInput = {
@@ -170,6 +165,8 @@ export const saveMeme = async (messageId: string, time: Date) => {
 
     try {
         await dbClient.send(new PutCommand(params));
+
+        console.log('Meme saved. Meme: ', meme);
 
         return meme;
     } catch (error) {
