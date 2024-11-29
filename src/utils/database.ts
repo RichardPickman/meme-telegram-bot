@@ -61,9 +61,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     const params: ScanCommandInput = {
         TableName,
-        ExpressionAttributeNames: {
-            '#publishTime': 'publishTime',
-        },
+        FilterExpression: 'publishTime = :publishTime',
         ExpressionAttributeValues: marshall({
             ':publishTime': publishTime.toISOString(),
         }),
