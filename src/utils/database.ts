@@ -1,8 +1,9 @@
-import { QueryCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
     PutCommand,
     PutCommandInput,
     QueryCommandInput,
+    ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
@@ -53,6 +54,34 @@ const queryDatabase = async (command: QueryCommandInput) => {
     }
 };
 
+const scanDatabase = async (command: ScanCommandInput) => {
+    try {
+        const data = await dbClient.send(new ScanCommand(command));
+
+        console.log('Data requested. Response: ', data);
+
+        if (!data.Items) {
+            console.log('Items is undefined.');
+
+            return null;
+        }
+
+        if (data.Items.length === 0) {
+            console.log('No item found');
+
+            return null;
+        }
+
+        const result = data.Items[0];
+
+        return result as unknown as Meme;
+    } catch (error) {
+        console.error('Error: ', error);
+
+        return null;
+    }
+};
+
 export const getCurrentTimeFrameMeme = async (TableName: string) => {
     const time = getCurrentTimeFrame();
 
@@ -76,7 +105,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    return await queryDatabase(params);
+    return await scanDatabase(params);
 };
 
 const getClosestTimeFrame = (time: Date) => {
