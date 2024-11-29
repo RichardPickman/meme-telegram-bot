@@ -1,3 +1,4 @@
+import { Meme } from '../types';
 import { bot } from './instances/bot';
 import { getCurrentTimeFrameMeme, updateMeme } from './utils/database';
 
@@ -5,9 +6,9 @@ const TELEGRAM_PROPOSAL_CHANNEL_ID = process.env.TELEGRAM_PROPOSAL_CHANNEL_ID;
 const TELEGRAM_MEME_CHANNEL_ID = process.env.TELEGRAM_MEME_CHANNEL_ID;
 
 export const handler = async () => {
-    const meme = await getCurrentTimeFrameMeme(
+    const meme = (await getCurrentTimeFrameMeme(
         process.env.MEME_DATABASE_TABLE_NAME!,
-    );
+    )) as Meme | null;
 
     if (!meme) {
         console.log('No meme to publish');
