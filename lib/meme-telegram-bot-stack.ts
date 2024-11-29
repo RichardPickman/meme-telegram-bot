@@ -19,12 +19,6 @@ export class MemeTelegramBotStack extends Stack {
             removalPolicy: RemovalPolicy.DESTROY,
         });
 
-        proposalDb.addGlobalSecondaryIndex({
-            indexName: 'publishTime',
-            sortKey: { name: 'id', type: AttributeType.STRING },
-            partitionKey: { name: 'publishTime', type: AttributeType.STRING },
-        });
-
         const memeTelegramBotHandler = new NodejsFunction(
             this,
             'Meme Telegram Bot',
