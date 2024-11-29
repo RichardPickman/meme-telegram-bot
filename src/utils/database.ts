@@ -70,13 +70,10 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
 export const getLatestSavedMeme = async (TableName: string) => {
     console.log('Getting latest saved meme...');
-
     const params: QueryCommandInput = {
         TableName,
-        IndexName: 'createdAt',
-        KeyConditionExpression: 'createdAt = :createdAt',
-        ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
         ScanIndexForward: false,
+        Limit: 1,
     };
 
     return await queryDatabase(params);
