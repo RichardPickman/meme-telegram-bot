@@ -47,7 +47,7 @@ const queryDatabase = async (command: QueryCommandInput) => {
 
         const result = data.Items[0];
 
-        return unmarshall(result) as unknown as Meme;
+        return unmarshall(result);
     } catch (error) {
         console.error('Error: ', error);
 
@@ -61,7 +61,6 @@ const scanDatabase = async (command: ScanCommandInput) => {
 
         console.log(
             'Data requested. Response: ',
-            data,
             inspect(data, {
                 depth: Infinity,
             }),
@@ -106,6 +105,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
 export const getLatestSavedMeme = async (TableName: string) => {
     console.log('Getting latest saved meme...');
+
     const params: QueryCommandInput = {
         TableName,
         ScanIndexForward: false,
