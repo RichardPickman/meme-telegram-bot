@@ -1,9 +1,8 @@
-import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/client-dynamodb';
 import {
     PutCommand,
     PutCommandInput,
     QueryCommandInput,
-    ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
@@ -17,18 +16,29 @@ type Meme = {
     createdAt: number;
 };
 
-export const getFirstUnpublishedMeme = async (TableName: string) => {
-    const params: ScanCommandInput = {
+const getCurrentTimeFrame = () => {
+    const time = new Date();
+
+    time.setSeconds(0);
+    time.setMilliseconds(0);
+
+    return time;
+};
+
+export const getCurrentTimeFrameMeme = async (TableName: string) => {
+    const time = getCurrentTimeFrame();
+
+    const params: QueryCommandInput = {
         TableName,
-        FilterExpression: 'isPublished = :isPublished',
+        FilterExpression: 'time = :time',
         ExpressionAttributeValues: {
-            ':isPublished': false,
+            ':time': time.toISOString(),
         },
         Limit: 1,
     };
 
     try {
-        const data = await dbClient.send(new ScanCommand(params));
+        const data = await dbClient.send(new QueryCommand(params));
 
         if (!data.Items) {
             return null;
@@ -71,6 +81,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         return result as Meme;
     } catch (error) {
         console.log('Error: ', error);
+
         return null;
     }
 };
@@ -79,9 +90,12 @@ const getClosestTimeFrame = (time: Date) => {
     const isPastMid = time.getMinutes() > 30;
 
     if (isPastMid) {
-        time.setHours(time.getHours() + 1);
+        const currentHour = time.getHours();
+
+        time.setHours(currentHour + 1);
         time.setMinutes(0);
         time.setSeconds(0);
+        time.setMilliseconds(0);
 
         return time;
     }
@@ -89,6 +103,7 @@ const getClosestTimeFrame = (time: Date) => {
     if (!isPastMid) {
         time.setMinutes(30);
         time.setSeconds(0);
+        time.setMilliseconds(0);
 
         return time;
     }
