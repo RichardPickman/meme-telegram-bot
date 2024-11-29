@@ -74,17 +74,26 @@ export const proceedWithAdminAction = async (
             process.env.MEME_DATABASE_TABLE_NAME!,
         );
 
+        console.log('Last meme: ', lastMeme);
+
         let time = lastMeme?.time;
 
         if (lastMeme) {
             const lastTime = lastMeme.time;
+            console.log('Last time: ', lastTime);
 
             lastTime.setMinutes(lastTime.getMinutes() + 30);
+
+            console.log('New time: ', lastTime);
 
             time = lastTime;
         }
 
         if (!time) {
+            console.log(
+                'No time found. No meme present. Creating new timeframe for meme.',
+            );
+
             time = new Date();
         }
 
