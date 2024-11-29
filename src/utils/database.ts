@@ -1,13 +1,11 @@
-import { ScanCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
-    GetCommand,
-    GetCommandInput,
     PutCommand,
     PutCommandInput,
     QueryCommandInput,
     ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
 import { inspect } from 'util';
 import { Meme } from '../../types';
@@ -22,19 +20,27 @@ const getCurrentTimeFrame = () => {
     return publishTime;
 };
 
-const getItem = async (command: GetCommandInput) => {
+const queryDatabase = async (command: QueryCommandInput) => {
     try {
-        const data = await dbClient.send(new GetCommand(command));
+        const data = await dbClient.send(new QueryCommand(command));
 
         console.log('Data requested. Response: ', data);
 
-        if (!data.Item) {
+        if (!data.Items) {
             console.log('Items is undefined.');
 
             return null;
         }
 
-        return unmarshall(data.Item);
+        if (data.Items.length === 0) {
+            console.log('No item found');
+
+            return null;
+        }
+
+        const result = data.Items[0];
+
+        return unmarshall(result);
     } catch (error) {
         console.error('Error: ', error);
 
@@ -82,14 +88,16 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     console.log('Publish time: ', publishTime);
 
-    const params: GetCommandInput = {
+    const params: QueryCommandInput = {
         TableName,
-        Key: {
-            publishTime: publishTime.toISOString(),
-        },
+        Limit: 1,
+        KeyConditionExpression: 'publishTime = :publishTime',
+        ExpressionAttributeValues: marshall({
+            ':publishTime': publishTime.toISOString(),
+        }),
     };
 
-    const meme = await getItem(params);
+    const meme = await queryDatabase(params);
 
     if (!meme) {
         return null;
