@@ -78,17 +78,6 @@ export const proceedWithAdminAction = async (
 
         let time = lastMeme?.time;
 
-        if (lastMeme) {
-            const lastTime = lastMeme.time;
-            console.log('Last time: ', lastTime);
-
-            lastTime.setMinutes(lastTime.getMinutes() + 30);
-
-            console.log('New time: ', lastTime);
-
-            time = lastTime;
-        }
-
         if (!time) {
             console.log(
                 'No time found. No meme present. Creating new timeframe for meme.',
