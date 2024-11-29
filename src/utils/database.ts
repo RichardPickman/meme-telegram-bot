@@ -12,12 +12,12 @@ import { Meme } from '../../types';
 import { dbClient } from '../instances/db';
 
 const getCurrentTimeFrame = () => {
-    const time = new Date();
+    const release = new Date();
 
-    time.setSeconds(0);
-    time.setMilliseconds(0);
+    release.setSeconds(0);
+    release.setMilliseconds(0);
 
-    return time;
+    return release;
 };
 
 const queryDatabase = async (command: QueryCommandInput) => {
@@ -82,13 +82,13 @@ const scanDatabase = async (command: ScanCommandInput) => {
 };
 
 export const getCurrentTimeFrameMeme = async (TableName: string) => {
-    const time = getCurrentTimeFrame();
+    const release = getCurrentTimeFrame();
 
     const params: QueryCommandInput = {
         TableName,
-        FilterExpression: 'time = :time',
+        FilterExpression: 'release = :release',
         ExpressionAttributeValues: marshall({
-            ':time': time.toISOString(),
+            ':release': release.toISOString(),
         }),
         Limit: 1,
     };
@@ -117,50 +117,50 @@ export const getLatestSavedMeme = async (TableName: string) => {
         return null;
     }
 
-    return { ...meme, time: new Date(meme.time) };
+    return { ...meme, release: new Date(meme.release) };
 };
 
-const getClosestTimeFrame = (time: Date) => {
-    const isPastMid = time.getMinutes() >= 30;
+const getClosestTimeFrame = (release: Date) => {
+    const isPastMid = release.getMinutes() >= 30;
 
     if (isPastMid) {
-        const currentHour = time.getHours();
+        const currentHour = release.getHours();
 
-        time.setHours(currentHour + 1);
-        time.setMinutes(0);
-        time.setSeconds(0);
-        time.setMilliseconds(0);
+        release.setHours(currentHour + 1);
+        release.setMinutes(0);
+        release.setSeconds(0);
+        release.setMilliseconds(0);
 
-        return time;
+        return release;
     }
 
     if (!isPastMid) {
-        time.setMinutes(30);
-        time.setSeconds(0);
-        time.setMilliseconds(0);
+        release.setMinutes(30);
+        release.setSeconds(0);
+        release.setMilliseconds(0);
 
-        return time;
+        return release;
     }
 
-    return time;
+    return release;
 };
 
-const constructMeme = (messageId: string, time: Date): Meme => ({
+const constructMeme = (messageId: string, release: Date): Meme => ({
     id: randomUUID(),
     messageId,
     isPublished: false,
-    time: getClosestTimeFrame(time),
+    release: getClosestTimeFrame(release),
     createdAt: Date.now(),
 });
 
-export const saveMeme = async (messageId: string, time: Date) => {
+export const saveMeme = async (messageId: string, release: Date) => {
     console.log('Saving meme...');
 
-    const meme = constructMeme(messageId, time);
+    const meme = constructMeme(messageId, release);
 
     const params: PutCommandInput = {
         TableName: process.env.MEME_DATABASE_TABLE_NAME!,
-        Item: { ...meme, time: new Date(meme.time).toISOString() },
+        Item: { ...meme, release: new Date(meme.release).toISOString() },
     };
 
     try {
