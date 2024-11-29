@@ -1,11 +1,11 @@
 import { bot } from './instances/bot';
-import { getFirstUnpublishedMeme, updateMeme } from './utils/database';
+import { getCurrentTimeFrameMeme, updateMeme } from './utils/database';
 
 const TELEGRAM_PROPOSAL_CHANNEL_ID = process.env.TELEGRAM_PROPOSAL_CHANNEL_ID;
 const TELEGRAM_MEME_CHANNEL_ID = process.env.TELEGRAM_MEME_CHANNEL_ID;
 
 export const handler = async () => {
-    const meme = await getFirstUnpublishedMeme(
+    const meme = await getCurrentTimeFrameMeme(
         process.env.MEME_DATABASE_TABLE_NAME!,
     );
 
