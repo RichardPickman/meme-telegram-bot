@@ -74,7 +74,7 @@ export const proceedWithAdminAction = async (
             process.env.MEME_DATABASE_TABLE_NAME!,
         );
 
-        let time: Date | undefined;
+        let time = lastMeme?.time;
 
         if (lastMeme) {
             const lastTime = lastMeme.time;
