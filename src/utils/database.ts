@@ -61,12 +61,10 @@ const scanDatabase = async (command: ScanCommandInput) => {
 
         console.log(
             'Data requested. Response: ',
-            console.log(
-                data,
-                inspect(data, {
-                    depth: Infinity,
-                }),
-            ),
+            data,
+            inspect(data, {
+                depth: Infinity,
+            }),
         );
 
         if (!data.Items) {
