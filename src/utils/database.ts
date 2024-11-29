@@ -77,7 +77,6 @@ export const getLatestSavedMeme = async (TableName: string) => {
         KeyConditionExpression: 'createdAt = :createdAt',
         ExpressionAttributeValues: marshall({ ':createdAt': Date.now() }),
         ScanIndexForward: false,
-        Limit: 1,
     };
 
     return await queryDatabase(params);
