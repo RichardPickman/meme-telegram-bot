@@ -74,7 +74,7 @@ const scanDatabase = async (command: ScanCommandInput) => {
 
         const result = data.Items[0];
 
-        return result as unknown as Meme;
+        return result;
     } catch (error) {
         console.error('Error: ', error);
 
@@ -105,7 +105,9 @@ export const getLatestSavedMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    return await scanDatabase(params);
+    const item = (await scanDatabase(params)) as unknown as Meme;
+
+    return { ...item, time: new Date(item.time) };
 };
 
 const getClosestTimeFrame = (time: Date) => {
