@@ -1,7 +1,8 @@
-import { ScanCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
     PutCommand,
     PutCommandInput,
+    QueryCommandInput,
     ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
@@ -17,6 +18,34 @@ const getCurrentTimeFrame = () => {
     publishTime.setMilliseconds(0);
 
     return publishTime;
+};
+
+const queryDatabase = async (command: QueryCommandInput) => {
+    try {
+        const data = await dbClient.send(new QueryCommand(command));
+
+        console.log('Data requested. Response: ', data);
+
+        if (!data.Items) {
+            console.log('Items is undefined.');
+
+            return null;
+        }
+
+        if (data.Items.length === 0) {
+            console.log('No item found');
+
+            return null;
+        }
+
+        const result = data.Items[0];
+
+        return unmarshall(result);
+    } catch (error) {
+        console.error('Error: ', error);
+
+        return null;
+    }
 };
 
 const scanDatabase = async (command: ScanCommandInput) => {
@@ -57,18 +86,18 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     const publishTime = getCurrentTimeFrame();
 
-    console.log('Publish time: ', publishTime.toISOString());
+    console.log('Publish time: ', publishTime);
 
-    const params: ScanCommandInput = {
+    const params: QueryCommandInput = {
         TableName,
         Limit: 1,
-        FilterExpression: 'publishTime = :publishTime',
+        KeyConditionExpression: 'publishTime = :publishTime',
         ExpressionAttributeValues: marshall({
             ':publishTime': publishTime.toISOString(),
         }),
     };
 
-    const meme = await scanDatabase(params);
+    const meme = await queryDatabase(params);
 
     if (!meme) {
         return null;
@@ -82,6 +111,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
 
     const params = {
         TableName,
+        ScanIndexForward: false,
         Limit: 1,
     };
 
