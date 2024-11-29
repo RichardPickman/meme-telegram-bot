@@ -77,7 +77,7 @@ export const proceedWithAdminAction = async (
         let time: Date | undefined;
 
         if (lastMeme) {
-            const lastTime = new Date(lastMeme.time);
+            const lastTime = lastMeme.time;
 
             lastTime.setMinutes(lastTime.getMinutes() + 30);
 
