@@ -62,7 +62,7 @@ export class MemeTelegramBotStack extends Stack {
         proposalDb.grantReadWriteData(memeTelegramBotHandler);
 
         const rule = new Rule(this, 'Rule', {
-            schedule: Schedule.cron({ minute: '*/59' }),
+            schedule: Schedule.cron({ minute: '*/30' }),
         });
 
         rule.addTarget(new LambdaFunction(memePublisherHandler));
