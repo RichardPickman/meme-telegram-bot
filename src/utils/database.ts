@@ -4,7 +4,6 @@ import {
     PutCommandInput,
     QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
 import { dbClient } from '../instances/db';
 
@@ -43,11 +42,12 @@ const queryDatabase = async (command: QueryCommandInput) => {
             return null;
         }
 
-        const result = unmarshall(data.Items[0]);
+        const result = data.Items[0];
 
-        return result as Meme;
+        return result as unknown as Meme;
     } catch (error) {
-        console.log('Error: ', error);
+        console.error('Error: ', error);
+
         return null;
     }
 };
