@@ -74,7 +74,19 @@ export const proceedWithAdminAction = async (
             process.env.MEME_DATABASE_TABLE_NAME!,
         );
 
-        const time = lastMeme?.time ?? new Date();
+        let time: Date | undefined;
+
+        if (lastMeme) {
+            const lastTime = new Date(lastMeme.time);
+
+            lastTime.setMinutes(lastTime.getMinutes() + 30);
+
+            time = lastTime;
+        }
+
+        if (!time) {
+            time = new Date();
+        }
 
         const newMeme = await saveMeme(messageId, time);
 
