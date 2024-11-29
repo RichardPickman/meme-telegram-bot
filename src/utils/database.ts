@@ -57,7 +57,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     const publishTime = getCurrentTimeFrame();
 
-    console.log('Publish time: ', publishTime);
+    console.log('Publish time: ', publishTime.toISOString());
 
     const params: ScanCommandInput = {
         TableName,
