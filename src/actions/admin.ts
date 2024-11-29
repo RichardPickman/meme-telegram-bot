@@ -76,17 +76,17 @@ export const proceedWithAdminAction = async (
 
         console.log('Last meme: ', lastMeme);
 
-        let release = lastMeme?.release;
+        let publishTime = lastMeme?.publishTime;
 
-        if (!release) {
+        if (!publishTime) {
             console.log(
-                'No release found. No meme present. Creating new timeframe for meme.',
+                'No publishTime found. No meme present. Creating new timeframe for meme.',
             );
 
-            release = new Date();
+            publishTime = new Date();
         }
 
-        const newMeme = await saveMeme(messageId, release);
+        const newMeme = await saveMeme(messageId, publishTime);
 
         if (!newMeme) {
             console.log('No message provided');
@@ -107,7 +107,7 @@ export const proceedWithAdminAction = async (
         await cleanUpAfterAction(
             Number(messageId),
             body.callback_query.message.message_id,
-            `Meme saved. Time of publishing: ${newMeme.release}`,
+            `Meme saved. Time of publishing: ${newMeme.publishTime}`,
         );
 
         return SuccessfullResponse();

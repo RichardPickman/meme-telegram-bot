@@ -1,7 +1,7 @@
 export interface Meme {
     id: string;
     isPublished: boolean;
-    release: Date;
+    publishTime: Date;
     messageId: string;
     createdAt: number;
 }
