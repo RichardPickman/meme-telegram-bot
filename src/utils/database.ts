@@ -121,7 +121,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
 };
 
 const getClosestTimeFrame = (time: Date) => {
-    const isPastMid = time.getMinutes() > 30;
+    const isPastMid = time.getMinutes() >= 30;
 
     if (isPastMid) {
         const currentHour = time.getHours();
