@@ -100,7 +100,13 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    return await queryDatabase(params);
+    const meme = await queryDatabase(params);
+
+    if (!meme) {
+        return null;
+    }
+
+    return meme;
 };
 
 export const getLatestSavedMeme = async (TableName: string) => {
@@ -112,9 +118,13 @@ export const getLatestSavedMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    const item = (await scanDatabase(params)) as unknown as Meme;
+    const meme = (await scanDatabase(params)) as Meme | null;
 
-    return { ...item, time: new Date(item.time) };
+    if (!meme) {
+        return null;
+    }
+
+    return { ...meme, time: new Date(meme.time) };
 };
 
 const getClosestTimeFrame = (time: Date) => {
