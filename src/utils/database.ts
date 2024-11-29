@@ -82,7 +82,6 @@ export const getLatestSavedMeme = async (TableName: string) => {
 
     const params = {
         TableName,
-        ScanIndexForward: false,
         Limit: 1,
     };
 
