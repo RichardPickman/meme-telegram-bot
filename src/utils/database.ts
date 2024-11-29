@@ -1,8 +1,7 @@
-import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
     PutCommand,
     PutCommandInput,
-    QueryCommandInput,
     ScanCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
@@ -18,34 +17,6 @@ const getCurrentTimeFrame = () => {
     publishTime.setMilliseconds(0);
 
     return publishTime;
-};
-
-const queryDatabase = async (command: QueryCommandInput) => {
-    try {
-        const data = await dbClient.send(new QueryCommand(command));
-
-        console.log('Data requested. Response: ', data);
-
-        if (!data.Items) {
-            console.log('Items is undefined.');
-
-            return null;
-        }
-
-        if (data.Items.length === 0) {
-            console.log('No item found');
-
-            return null;
-        }
-
-        const result = data.Items[0];
-
-        return unmarshall(result);
-    } catch (error) {
-        console.error('Error: ', error);
-
-        return null;
-    }
 };
 
 const scanDatabase = async (command: ScanCommandInput) => {
@@ -88,16 +59,16 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     console.log('Publish time: ', publishTime);
 
-    const params: QueryCommandInput = {
+    const params: ScanCommandInput = {
         TableName,
         Limit: 1,
-        KeyConditionExpression: 'publishTime = :publishTime',
+        FilterExpression: 'publishTime = :publishTime',
         ExpressionAttributeValues: marshall({
             ':publishTime': publishTime.toISOString(),
         }),
     };
 
-    const meme = await queryDatabase(params);
+    const meme = await scanDatabase(params);
 
     if (!meme) {
         return null;
@@ -109,7 +80,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 export const getLatestSavedMeme = async (TableName: string) => {
     console.log('Getting latest saved meme...');
 
-    const params: QueryCommandInput = {
+    const params = {
         TableName,
         ScanIndexForward: false,
         Limit: 1,
