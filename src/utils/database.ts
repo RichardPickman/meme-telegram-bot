@@ -25,20 +25,11 @@ const getCurrentTimeFrame = () => {
     return time;
 };
 
-export const getCurrentTimeFrameMeme = async (TableName: string) => {
-    const time = getCurrentTimeFrame();
-
-    const params: QueryCommandInput = {
-        TableName,
-        FilterExpression: 'time = :time',
-        ExpressionAttributeValues: {
-            ':time': time.toISOString(),
-        },
-        Limit: 1,
-    };
-
+const queryDatabase = async (command: QueryCommandInput) => {
     try {
-        const data = await dbClient.send(new QueryCommand(params));
+        const data = await dbClient.send(new QueryCommand(command));
+
+        console.log('Data requested. Response: ', data);
 
         if (!data.Items) {
             console.log('Items is undefined. No meme present');
@@ -61,6 +52,21 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
     }
 };
 
+export const getCurrentTimeFrameMeme = async (TableName: string) => {
+    const time = getCurrentTimeFrame();
+
+    const params: QueryCommandInput = {
+        TableName,
+        FilterExpression: 'time = :time',
+        ExpressionAttributeValues: {
+            ':time': time.toISOString(),
+        },
+        Limit: 1,
+    };
+
+    return await queryDatabase(params);
+};
+
 export const getLatestSavedMeme = async (TableName: string) => {
     console.log('Getting latest saved meme...');
 
@@ -73,29 +79,7 @@ export const getLatestSavedMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    try {
-        const data = await dbClient.send(new QueryCommand(params));
-
-        if (!data.Items) {
-            console.log('Items is undefined. No meme present');
-
-            return null;
-        }
-
-        if (data.Items.length === 0) {
-            console.log('No meme found');
-
-            return null;
-        }
-
-        const result = unmarshall(data.Items[0]);
-
-        return { ...result, time: new Date(result.time) } as Meme;
-    } catch (error) {
-        console.log('Error: ', error);
-
-        return null;
-    }
+    return await queryDatabase(params);
 };
 
 const getClosestTimeFrame = (time: Date) => {
