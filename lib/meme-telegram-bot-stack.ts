@@ -36,6 +36,11 @@ export class MemeTelegramBotStack extends Stack {
             },
         );
 
+        proposalDb.addGlobalSecondaryIndex({
+            indexName: 'publishTime',
+            partitionKey: { name: 'publishTime', type: AttributeType.STRING },
+        });
+
         const memePublisherHandler = new NodejsFunction(
             this,
             'Meme publisher handler',
