@@ -117,9 +117,9 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No message id provided');
         }
 
-        const saintPeterTime = new Date(newMeme.publishTime).setUTCHours(
-            newMeme.publishTime.getUTCHours() + 3,
-        );
+        const saintPeterTime = new Date(newMeme.publishTime);
+
+        saintPeterTime.setUTCHours(newMeme.publishTime.getUTCHours() + 3);
 
         await cleanUpAfterAction(
             body.callback_query.message.message_id,
