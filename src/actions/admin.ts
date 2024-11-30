@@ -9,7 +9,7 @@ const cleanUpAfterAction = async (controlsId: number, caption: string) => {
     console.log('Cleaning up after action...');
 
     try {
-        await bot.editMessageCaption(caption, {
+        await bot.editMessageText(caption, {
             chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
             message_id: controlsId,
         });
