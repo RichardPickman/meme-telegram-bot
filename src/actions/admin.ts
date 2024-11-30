@@ -35,7 +35,7 @@ const isTimePassed = (publishTime: Date | undefined) => {
         return true;
     }
 
-    return currentTime.getTime() - publishTime.getTime() > 1000 * 60 * 60 * 24;
+    return currentTime.getTime() > publishTime.getTime();
 };
 
 export const proceedWithAdminAction = async (
