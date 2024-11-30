@@ -5,20 +5,22 @@ import { isAdmin } from '../utils/booleans';
 import { getLatestSavedMeme, saveMeme } from '../utils/database';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
-const cleanUpAfterAction = async (
-    memeId: number,
-    controlsId: number,
-    caption: string,
-) => {
+const cleanUpAfterAction = async (controlsId: number, caption: string) => {
     console.log('Cleaning up after action...');
 
     try {
         await bot.editMessageCaption(caption, {
             chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            message_id: memeId,
+            message_id: controlsId,
         });
 
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
+        await bot.editMessageReplyMarkup(
+            { inline_keyboard: [] },
+            {
+                chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+                message_id: controlsId,
+            },
+        );
 
         return;
     } catch (e) {
@@ -115,10 +117,13 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No message id provided');
         }
 
+        const saintPeterTime = new Date(newMeme.publishTime).setUTCHours(
+            newMeme.publishTime.getUTCHours() + 3,
+        );
+
         await cleanUpAfterAction(
-            Number(messageId),
             body.callback_query.message.message_id,
-            `Meme saved. Time of publishing: ${newMeme.publishTime}`,
+            `Meme saved. Time of publishing: ${saintPeterTime}`,
         );
 
         return SuccessfullResponse();
@@ -138,7 +143,6 @@ export const proceedWithAdminAction = async (
         });
 
         await cleanUpAfterAction(
-            Number(messageId),
             body.callback_query.message.message_id,
             'Declined',
         );
