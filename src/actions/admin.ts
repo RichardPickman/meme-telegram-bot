@@ -1,27 +1,26 @@
 import { CallbackQuery } from 'node-telegram-bot-api';
-import {
-    TELEGRAM_MEME_CHANNEL_ID,
-    TELEGRAM_PROPOSAL_CHANNEL_ID,
-} from '../../lib/environments';
+import { TELEGRAM_PROPOSAL_CHANNEL_ID } from '../../lib/environments';
 import { bot } from '../instances/bot';
 import { isAdmin } from '../utils/booleans';
-import { getRandomEmoji } from '../utils/helpers';
+import { getLatestSavedMeme, saveMeme } from '../utils/database';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
-const cleanUpAfterAction = async (
-    memeId: number,
-    controlsId: number,
-    caption: 'Approved' | 'Declined',
-) => {
+const cleanUpAfterAction = async (controlsId: number, caption: string) => {
     console.log('Cleaning up after action...');
 
     try {
-        await bot.editMessageCaption(caption, {
+        await bot.editMessageText(caption, {
             chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            message_id: memeId,
+            message_id: controlsId,
         });
 
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
+        await bot.editMessageReplyMarkup(
+            { inline_keyboard: [] },
+            {
+                chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+                message_id: controlsId,
+            },
+        );
 
         return;
     } catch (e) {
@@ -29,6 +28,16 @@ const cleanUpAfterAction = async (
 
         return ErrorResponse('Error cleaning up after action');
     }
+};
+
+const isTimePassed = (publishTime: Date | undefined) => {
+    const currentTime = new Date();
+
+    if (!publishTime) {
+        return true;
+    }
+
+    return currentTime.getTime() > publishTime.getTime();
 };
 
 export const proceedWithAdminAction = async (
@@ -73,35 +82,34 @@ export const proceedWithAdminAction = async (
     if (action === 'approve') {
         console.log('Action is approved. Proceeding with sending...');
 
-        const message = await bot.forwardMessage(
-            TELEGRAM_MEME_CHANNEL_ID!,
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            Number(messageId),
+        const lastMeme = await getLatestSavedMeme(
+            process.env.MEME_DATABASE_TABLE_NAME!,
         );
 
-        if (!message) {
+        console.log('Last meme: ', lastMeme);
+
+        let publishTime = lastMeme?.publishTime;
+        const isTimeFrameExpired = isTimePassed(publishTime);
+
+        if (!publishTime || isTimeFrameExpired) {
+            console.log(
+                'No publishTime found. No meme present. Creating new timeframe for meme.',
+            );
+
+            publishTime = new Date();
+        }
+
+        const newMeme = await saveMeme(messageId, publishTime);
+
+        if (!newMeme) {
             console.log('No message provided');
 
             return ErrorResponse('No message provided');
         }
 
         await bot.answerCallbackQuery(body.callback_query.id, {
-            text: 'Meme sent 🎉',
+            text: 'Meme saved.',
         });
-
-        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
-        await bot.setMessageReaction(
-            TELEGRAM_MEME_CHANNEL_ID!,
-            message.message_id,
-            {
-                reaction: [
-                    {
-                        type: 'emoji',
-                        emoji: getRandomEmoji(),
-                    },
-                ],
-            },
-        );
 
         if (!body.callback_query.message?.message_id) {
             console.log('No message id provided');
@@ -109,10 +117,13 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No message id provided');
         }
 
+        const saintPeterTime = new Date(newMeme.publishTime);
+
+        saintPeterTime.setUTCHours(newMeme.publishTime.getUTCHours() + 3);
+
         await cleanUpAfterAction(
-            Number(messageId),
             body.callback_query.message.message_id,
-            'Approved',
+            `Meme saved. Time of publishing: ${saintPeterTime}`,
         );
 
         return SuccessfullResponse();
@@ -132,7 +143,6 @@ export const proceedWithAdminAction = async (
         });
 
         await cleanUpAfterAction(
-            Number(messageId),
             body.callback_query.message.message_id,
             'Declined',
         );

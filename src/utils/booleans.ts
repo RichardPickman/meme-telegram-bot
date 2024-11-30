@@ -31,5 +31,4 @@ export const isMessageContainPrivateChatType = (
     }
 
     return false;
-    a;
 };
