@@ -28,6 +28,16 @@ const cleanUpAfterAction = async (
     }
 };
 
+const isTimePassed = (publishTime: Date | undefined) => {
+    const currentTime = new Date();
+
+    if (!publishTime) {
+        return true;
+    }
+
+    return currentTime.getTime() - publishTime.getTime() > 1000 * 60 * 60 * 24;
+};
+
 export const proceedWithAdminAction = async (
     body: Body & { callback_query: CallbackQuery },
 ) => {
@@ -77,8 +87,9 @@ export const proceedWithAdminAction = async (
         console.log('Last meme: ', lastMeme);
 
         let publishTime = lastMeme?.publishTime;
+        const isTimeFrameExpired = isTimePassed(publishTime);
 
-        if (!publishTime) {
+        if (!publishTime || isTimeFrameExpired) {
             console.log(
                 'No publishTime found. No meme present. Creating new timeframe for meme.',
             );
