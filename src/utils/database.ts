@@ -62,7 +62,7 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
     const params: QueryCommandInput = {
         TableName,
         IndexName: 'publishTime',
-        FilterExpression: 'publishTime = :publishTime',
+        KeyConditionExpression: 'publishTime = :publishTime',
         ExpressionAttributeValues: marshall({
             ':publishTime': publishTime.toISOString(),
         }),
