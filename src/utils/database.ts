@@ -1,8 +1,8 @@
-import { ScanCommand } from '@aws-sdk/client-dynamodb';
+import { QueryCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import {
     PutCommand,
     PutCommandInput,
-    ScanCommandInput,
+    QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { randomUUID } from 'crypto';
@@ -19,9 +19,9 @@ const getCurrentTimeFrame = () => {
     return publishTime;
 };
 
-const scanDatabase = async (command: ScanCommandInput) => {
+const makeDbReadAccess = async (command: ScanCommand | QueryCommand) => {
     try {
-        const data = await dbClient.send(new ScanCommand(command));
+        const data = await dbClient.send(command);
 
         console.log(
             'Data requested. Response: ',
@@ -59,15 +59,18 @@ export const getCurrentTimeFrameMeme = async (TableName: string) => {
 
     console.log('Publish time: ', publishTime);
 
-    const params: ScanCommandInput = {
+    const params: QueryCommandInput = {
         TableName,
+        IndexName: 'publishTime',
         FilterExpression: 'publishTime = :publishTime',
         ExpressionAttributeValues: marshall({
             ':publishTime': publishTime.toISOString(),
         }),
     };
 
-    const meme = await scanDatabase(params);
+    const query = new QueryCommand(params);
+
+    const meme = await makeDbReadAccess(query);
 
     if (!meme) {
         return null;
@@ -85,7 +88,9 @@ export const getLatestSavedMeme = async (TableName: string) => {
         Limit: 1,
     };
 
-    const meme = (await scanDatabase(params)) as Meme | null;
+    const scan = new ScanCommand(params);
+
+    const meme = (await makeDbReadAccess(scan)) as Meme | null;
 
     if (!meme) {
         return null;
