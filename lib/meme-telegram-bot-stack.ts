@@ -48,6 +48,7 @@ export class MemeTelegramBotStack extends Stack {
                 ...commonLambdaProps,
                 entry: path.join(lambdaPath, 'publishMeme.ts'),
                 environment: {
+                    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN!,
                     TELEGRAM_PROPOSAL_CHANNEL_ID:
                         process.env.TELEGRAM_PROPOSAL_CHANNEL_ID!,
                     TELEGRAM_MEME_CHANNEL_ID:
