@@ -56,7 +56,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return await proceedWithAdminAction(body);
     }
 
-    const isPostInChannel = isGroupPost(body.message);
+    const isPostInChannel = isGroupPost(body.channel_post);
 
     if (isPostInChannel) {
         return await proceedWithChannelAction(body);
