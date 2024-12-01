@@ -125,7 +125,7 @@ export const sendMessage = async (text: string, chatId: number) => {
 
 export const setReactionToPost = async (
     messageId: number,
-    channelId: number,
+    channelId: number | string,
 ) => {
     console.log('Sending reaction...');
 
