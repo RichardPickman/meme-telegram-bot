@@ -1,4 +1,5 @@
 import { bot } from './instances/bot';
+import { getRandomEmoji } from './utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from './utils/responses';
 
 export const sendProposedMemeControls = async (
@@ -112,7 +113,32 @@ export const sendMessage = async (text: string, chatId: number) => {
     console.log('Sending feedback...');
 
     try {
-        const message = await bot.sendMessage(chatId, text);
+        await bot.sendMessage(chatId, text);
+
+        return SuccessfullResponse();
+    } catch (e) {
+        console.log('Error sending feedback. Error: ', e);
+
+        return ErrorResponse('Error sending feedback');
+    }
+};
+
+export const setReactionToPost = async (
+    messageId: number,
+    channelId: number,
+) => {
+    console.log('Sending reaction...');
+
+    try {
+        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
+        await bot.setMessageReaction(channelId, messageId, {
+            reaction: [
+                {
+                    type: 'emoji',
+                    emoji: getRandomEmoji(),
+                },
+            ],
+        });
 
         return SuccessfullResponse();
     } catch (e) {
