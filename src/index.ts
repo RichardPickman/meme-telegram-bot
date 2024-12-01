@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { proceedWithAdminAction } from './actions/admin';
+import { proceedWithChannelAction } from './actions/channel';
 import { proceedWithMemeProposal } from './actions/proposal';
 import {
     isActionContainChannelPostOrMessage,
+    isGroupPost,
     isMessageContainPrivateChatType,
     isMessageIsCallbackQuery,
 } from './utils/booleans';
@@ -52,6 +54,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     if (isAdminAction) {
         return await proceedWithAdminAction(body);
+    }
+
+    const isPostInChannel = isGroupPost(body.message);
+
+    if (isPostInChannel) {
+        return await proceedWithChannelAction(body);
     }
 
     return SuccessfullResponse('Handler ended without errors');
