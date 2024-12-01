@@ -31,5 +31,15 @@ export const isMessageContainPrivateChatType = (
     }
 
     return false;
-    a;
 };
+
+const hasSenderChatTitle = (message: Message) => {
+    return message?.sender_chat?.title;
+};
+
+const hasChatTitle = (message: Message) => {
+    return message.chat.title;
+};
+
+export const isGroupPost = (message: Message) =>
+    [hasSenderChatTitle(message), hasChatTitle(message)].every(Boolean);

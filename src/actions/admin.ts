@@ -4,8 +4,8 @@ import {
     TELEGRAM_PROPOSAL_CHANNEL_ID,
 } from '../../lib/environments';
 import { bot } from '../instances/bot';
+import { setReactionToPost } from '../senders';
 import { isAdmin } from '../utils/booleans';
-import { getRandomEmoji } from '../utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
 const cleanUpAfterAction = async (
@@ -89,18 +89,9 @@ export const proceedWithAdminAction = async (
             text: 'Meme sent 🎉',
         });
 
-        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
-        await bot.setMessageReaction(
+        await setReactionToPost(
+            Number(message.message_id),
             TELEGRAM_MEME_CHANNEL_ID!,
-            message.message_id,
-            {
-                reaction: [
-                    {
-                        type: 'emoji',
-                        emoji: getRandomEmoji(),
-                    },
-                ],
-            },
         );
 
         if (!body.callback_query.message?.message_id) {
