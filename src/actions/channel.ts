@@ -5,15 +5,15 @@ import { ErrorResponse } from '../utils/responses';
 export const proceedWithChannelAction = async (data: Update) => {
     console.log('Proceeding with channel action...');
 
-    const message = data.message;
+    const channel_post = data.channel_post;
 
-    if (!message) {
+    if (!channel_post) {
         console.log('No message provided');
 
         return ErrorResponse('No message provided');
     }
 
-    const chatId = message.chat.id;
+    const chatId = channel_post.chat.id;
 
     if (!chatId) {
         console.log('No chat id provided');
@@ -21,5 +21,5 @@ export const proceedWithChannelAction = async (data: Update) => {
         return ErrorResponse('No chat id provided');
     }
 
-    return await setReactionToPost(message.message_id, chatId);
+    return await setReactionToPost(channel_post.message_id, chatId);
 };
