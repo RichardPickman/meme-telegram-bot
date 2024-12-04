@@ -1,6 +1,8 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import path from 'path';
 import { commonLambdaProps, rootDir } from './helpers';
@@ -25,6 +27,16 @@ export class MemeTelegramBotStack extends Stack {
                         process.env.TELEGRAM_MEME_CHANNEL_ID!,
                 },
             },
+        );
+
+        const memeTelegramQueue = new Queue(this, 'MemeTelegramQueue', {
+            queueName: 'MemeTelegramQueue',
+            visibilityTimeout: Duration.seconds(15),
+            retentionPeriod: Duration.hours(1),
+        });
+
+        memeTelegramBotHandler.addEventSource(
+            new SqsEventSource(memeTelegramQueue, { batchSize: 5 }),
         );
 
         const api = new RestApi(this, 'MemeTelegramBot', {
