@@ -73,10 +73,15 @@ export const proceedWithAdminAction = async (
     if (action === 'approve') {
         console.log('Action is approved. Proceeding with sending...');
 
-        const message = await bot.forwardMessage(
+        const message = await bot.copyMessage(
             TELEGRAM_MEME_CHANNEL_ID!,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
             Number(messageId),
+            {
+                reply_markup: {
+                    inline_keyboard: [],
+                },
+            },
         );
 
         if (!message) {
