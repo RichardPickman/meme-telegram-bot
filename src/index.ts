@@ -39,6 +39,8 @@ export const handler = async (event: SQSEvent) => {
             return ErrorResponse('Invalid event');
         }
 
+        console.log('Proceed with body: ', body);
+
         // Check chat type presence
         const isMemeProposal = isMessageContainPrivateChatType(body.message);
         const isSuitableAction = isActionContainChannelPostOrMessage(body);
