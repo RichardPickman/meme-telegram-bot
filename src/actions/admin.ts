@@ -70,13 +70,19 @@ export const proceedWithAdminAction = async (
         return ErrorResponse('User is not allowed to proceed');
     }
 
+    if (!body.callback_query.message?.message_id) {
+        console.log('No message id provided');
+
+        return ErrorResponse('No message id provided');
+    }
+
     if (action === 'approve') {
         console.log('Action is approved. Proceeding with sending...');
 
         const message = await bot.copyMessage(
             TELEGRAM_MEME_CHANNEL_ID!,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            Number(messageId),
+            Number(body.callback_query.message.message_id),
             {
                 reply_markup: {
                     inline_keyboard: [],
@@ -85,9 +91,9 @@ export const proceedWithAdminAction = async (
         );
 
         if (!message) {
-            console.log('No message provided');
+            console.log('No message posted');
 
-            return ErrorResponse('No message provided');
+            return ErrorResponse('No message posted');
         }
 
         await bot.answerCallbackQuery(body.callback_query.id, {
