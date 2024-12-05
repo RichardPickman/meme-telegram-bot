@@ -36,7 +36,7 @@ export class MemeTelegramBotStack extends Stack {
         });
 
         memeTelegramBotHandler.addEventSource(
-            new SqsEventSource(memeTelegramQueue, { batchSize: 5 }),
+            new SqsEventSource(memeTelegramQueue, { batchSize: 1 }),
         );
 
         const api = new RestApi(this, 'MemeTelegramBot', {
