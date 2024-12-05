@@ -1,4 +1,4 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -35,6 +35,21 @@ export class MemeTelegramBotStack extends Stack {
             retentionPeriod: Duration.hours(1),
         });
 
+        const queueHandler = new NodejsFunction(
+            this,
+            'Meme Bot Queue Handler',
+            {
+                ...commonLambdaProps,
+                entry: path.join(
+                    path.join(rootDir, 'services'),
+                    'queueHandler.ts',
+                ),
+                environment: {
+                    MEME_TELEGRAM_QUEUE_URL: memeTelegramQueue.queueUrl,
+                },
+            },
+        );
+
         memeTelegramBotHandler.addEventSource(
             new SqsEventSource(memeTelegramQueue, { batchSize: 1 }),
         );
@@ -49,5 +64,9 @@ export class MemeTelegramBotStack extends Stack {
             'POST',
             new LambdaIntegration(memeTelegramBotHandler),
         );
+
+        new CfnOutput(this, 'MemeTelegramBotQueueUrl', {
+            value: queueHandler.functionArn,
+        });
     }
 }
