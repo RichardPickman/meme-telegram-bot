@@ -10,7 +10,9 @@ const QUEUE_URL = process.env.MEME_TELEGRAM_QUEUE_URL!;
 const client = new SQSClient();
 
 export const handler = async (event: APIGatewayProxyEvent) => {
-    const body = JSON.parse(event.body ?? '');
+    console.log('Starting handler... Event: ', event);
+
+    const body = event.body;
 
     if (!body) {
         console.log('No body found in event. Terminating...');
