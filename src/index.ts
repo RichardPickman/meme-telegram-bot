@@ -31,15 +31,13 @@ export const handler = async (event: SQSEvent) => {
     console.log('Proceed with event: ', event);
 
     for (const record of event.Records) {
-        const eventBody = getBodyOrNull(record);
+        const body = getBodyOrNull(record);
 
-        if (!eventBody) {
+        if (!body) {
             console.log('Invalid event');
 
             return ErrorResponse('Invalid event');
         }
-
-        const body = getBodyOrNull(eventBody);
 
         console.log('Proceed with body: ', body);
 
