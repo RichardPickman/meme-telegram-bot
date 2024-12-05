@@ -1,4 +1,4 @@
-import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -58,6 +58,8 @@ export class MemeTelegramBotStack extends Stack {
             restApiName: 'MemeTelegramBot',
         });
 
+        const queueUrl = api.root.addResource('queue');
+
         const commandsAddress = api.root;
 
         commandsAddress.addMethod(
@@ -65,8 +67,6 @@ export class MemeTelegramBotStack extends Stack {
             new LambdaIntegration(memeTelegramBotHandler),
         );
 
-        new CfnOutput(this, 'MemeTelegramBotQueueUrl', {
-            value: queueHandler.functionArn,
-        });
+        queueUrl.addMethod('POST', new LambdaIntegration(queueHandler));
     }
 }
