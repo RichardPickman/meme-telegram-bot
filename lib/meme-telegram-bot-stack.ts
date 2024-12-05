@@ -1,9 +1,6 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import path from 'path';
 import { commonLambdaProps, rootDir } from './helpers';
@@ -30,44 +27,44 @@ export class MemeTelegramBotStack extends Stack {
             },
         );
 
-        const memeTelegramQueue = new Queue(this, 'MemeTelegramQueue', {
-            queueName: 'MemeTelegramQueue',
-            visibilityTimeout: Duration.seconds(15),
-            retentionPeriod: Duration.hours(1),
-        });
+        // const memeTelegramQueue = new Queue(this, 'MemeTelegramQueue', {
+        //     queueName: 'MemeTelegramQueue',
+        //     visibilityTimeout: Duration.seconds(15),
+        //     retentionPeriod: Duration.hours(1),
+        // });
 
-        const queueHandler = new NodejsFunction(
-            this,
-            'Meme Bot Queue Handler',
-            {
-                ...commonLambdaProps,
-                entry: path.join(
-                    path.join(rootDir, 'services'),
-                    'queueHandler.ts',
-                ),
-                environment: {
-                    MEME_TELEGRAM_QUEUE_URL: memeTelegramQueue.queueUrl,
-                },
-            },
-        );
+        // const queueHandler = new NodejsFunction(
+        //     this,
+        //     'Meme Bot Queue Handler',
+        //     {
+        //         ...commonLambdaProps,
+        //         entry: path.join(
+        //             path.join(rootDir, 'services'),
+        //             'queueHandler.ts',
+        //         ),
+        //         environment: {
+        //             MEME_TELEGRAM_QUEUE_URL: memeTelegramQueue.queueUrl,
+        //         },
+        //     },
+        // );
 
-        const queueHandlerPolicy = new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ['sqs:SendMessage'],
-            resources: [memeTelegramQueue.queueArn],
-        });
+        // const queueHandlerPolicy = new PolicyStatement({
+        //     effect: Effect.ALLOW,
+        //     actions: ['sqs:SendMessage'],
+        //     resources: [memeTelegramQueue.queueArn],
+        // });
 
-        queueHandler.addToRolePolicy(queueHandlerPolicy);
+        // queueHandler.addToRolePolicy(queueHandlerPolicy);
 
-        memeTelegramBotHandler.addEventSource(
-            new SqsEventSource(memeTelegramQueue, { batchSize: 1 }),
-        );
+        // memeTelegramBotHandler.addEventSource(
+        //     new SqsEventSource(memeTelegramQueue, { batchSize: 1 }),
+        // );
 
         const api = new RestApi(this, 'MemeTelegramBot', {
             restApiName: 'MemeTelegramBot',
         });
 
-        const queueUrl = api.root.addResource('queue');
+        // const queueUrl = api.root.addResource('queue');
 
         const commandsAddress = api.root;
 
@@ -76,6 +73,6 @@ export class MemeTelegramBotStack extends Stack {
             new LambdaIntegration(memeTelegramBotHandler),
         );
 
-        queueUrl.addMethod('POST', new LambdaIntegration(queueHandler));
+        // queueUrl.addMethod('POST', new LambdaIntegration(queueHandler));
     }
 }
