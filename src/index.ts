@@ -9,7 +9,7 @@ import {
     isMessageIsCallbackQuery,
 } from './utils/booleans';
 import { getBodyOrNull } from './utils/helpers';
-import { ErrorResponse, SuccessfullResponse } from './utils/responses';
+import { SuccessfullResponse } from './utils/responses';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_PROPOSAL_CHANNEL_ID = process.env.TELEGRAM_PROPOSAL_CHANNEL_ID;
@@ -36,7 +36,7 @@ export const handler = async (event: SQSEvent) => {
         if (!body) {
             console.log('Invalid event');
 
-            return ErrorResponse('Invalid event');
+            continue;
         }
 
         console.log('Proceed with body: ', body);
@@ -50,19 +50,25 @@ export const handler = async (event: SQSEvent) => {
                 'Request is determined as meme proposal... Proceeding with media...',
             );
 
-            return await proceedWithMemeProposal(body);
+            await proceedWithMemeProposal(body);
+
+            continue;
         }
 
         const isAdminAction = isMessageIsCallbackQuery(body);
 
         if (isAdminAction) {
-            return await proceedWithAdminAction(body);
+            await proceedWithAdminAction(body);
+
+            continue;
         }
 
         const isPostInChannel = isGroupPost(body.channel_post);
 
         if (isPostInChannel) {
-            return await proceedWithChannelAction(body);
+            await proceedWithChannelAction(body);
+
+            continue;
         }
     }
 
