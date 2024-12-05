@@ -3,16 +3,26 @@ import {
     SendMessageCommand,
     SendMessageCommandInput,
 } from '@aws-sdk/client-sqs';
-import { SQSEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 const QUEUE_URL = process.env.MEME_TELEGRAM_QUEUE_URL!;
 
 const client = new SQSClient();
 
-export const handler = async (event: SQSEvent) => {
+export const handler = async (event: APIGatewayProxyEvent) => {
+    const body = JSON.parse(event.body ?? '');
+
+    if (!body) {
+        console.log('No body found in event. Terminating...');
+
+        return {
+            statusCode: 200,
+        };
+    }
+
     const params: SendMessageCommandInput = {
         QueueUrl: QUEUE_URL,
-        MessageBody: JSON.stringify(event),
+        MessageBody: body,
     };
 
     const message = await client.send(new SendMessageCommand(params));
