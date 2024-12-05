@@ -18,6 +18,23 @@ import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 const feedbackMessage =
     'Thanks for your contribution. We will review it as soon as possible.';
 
+const replyMarkupWithThumbs = {
+    inline_keyboard: [
+        [
+            {
+                text: 'Approve',
+                callback_data: `approve`,
+            },
+        ],
+        [
+            {
+                text: 'Decline',
+                callback_data: `decline`,
+            },
+        ],
+    ],
+};
+
 const handleProposal = async (data: Message) => {
     if (isPhotoParameterExist(data)) {
         const photo = data.photo?.at(-1);
@@ -30,11 +47,10 @@ const handleProposal = async (data: Message) => {
 
         const photoId = photo.file_id;
 
-        await sendPhotoToChannel(
-            photoId,
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
-        );
+        await sendPhotoToChannel(photoId, TELEGRAM_PROPOSAL_CHANNEL_ID!, {
+            caption: data.caption,
+            reply_markup: replyMarkupWithThumbs,
+        });
 
         await sendMessage(feedbackMessage, data.chat.id);
 
@@ -50,11 +66,10 @@ const handleProposal = async (data: Message) => {
             return ErrorResponse('No video provided');
         }
 
-        await sendVideoToChannel(
-            video.file_id,
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
-        );
+        await sendVideoToChannel(video.file_id, TELEGRAM_PROPOSAL_CHANNEL_ID!, {
+            caption: data.caption,
+            reply_markup: replyMarkupWithThumbs,
+        });
 
         await sendMessage(feedbackMessage, data.chat.id);
 
@@ -73,7 +88,7 @@ const handleProposal = async (data: Message) => {
         await sendDocumentToChannel(
             document.file_id,
             TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            data.caption,
+            { caption: data.caption, reply_markup: replyMarkupWithThumbs },
         );
 
         await sendMessage(feedbackMessage, data.chat.id);
