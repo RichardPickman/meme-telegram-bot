@@ -1,4 +1,4 @@
-import { SQSEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { proceedWithAdminAction } from './actions/admin';
 import { proceedWithChannelAction } from './actions/channel';
 import { proceedWithMemeProposal } from './actions/proposal';
@@ -25,48 +25,44 @@ if (!ENV_VARS.every(Boolean)) {
     throw new Error('One or more environmental variables are not set');
 }
 
-export const handler = async (event: SQSEvent) => {
+export const handler = async (event: APIGatewayProxyEvent) => {
     console.log('Starting handler...');
 
     console.log('Proceed with event: ', event);
 
-    for (const record of event.Records) {
-        const body = getBodyOrNull(record);
+    const body = getBodyOrNull(event);
 
-        if (!body) {
-            console.log('Invalid event');
+    if (!body) {
+        console.log('Invalid event');
 
-            return ErrorResponse('Invalid event');
-        }
-
-        console.log('Proceed with body: ', body);
-
-        // Check chat type presence
-        const isMemeProposal = isMessageContainPrivateChatType(body.message);
-        const isSuitableAction = isActionContainChannelPostOrMessage(body);
-
-        if (isMemeProposal && isSuitableAction) {
-            console.log(
-                'Request is determined as meme proposal... Proceeding with media...',
-            );
-
-            return await proceedWithMemeProposal(body);
-        }
-
-        const isAdminAction = isMessageIsCallbackQuery(body);
-
-        if (isAdminAction) {
-            return await proceedWithAdminAction(body);
-        }
-
-        const isPostInChannel = isGroupPost(body.channel_post);
-
-        if (isPostInChannel) {
-            return await proceedWithChannelAction(body);
-        }
+        return ErrorResponse('Invalid event');
     }
 
-    // If no record is found
+    console.log('Proceed with body: ', body);
+
+    // Check chat type presence
+    const isMemeProposal = isMessageContainPrivateChatType(body.message);
+    const isSuitableAction = isActionContainChannelPostOrMessage(body);
+
+    if (isMemeProposal && isSuitableAction) {
+        console.log(
+            'Request is determined as meme proposal... Proceeding with media...',
+        );
+
+        return await proceedWithMemeProposal(body);
+    }
+
+    const isAdminAction = isMessageIsCallbackQuery(body);
+
+    if (isAdminAction) {
+        return await proceedWithAdminAction(body);
+    }
+
+    const isPostInChannel = isGroupPost(body.channel_post);
+
+    if (isPostInChannel) {
+        return await proceedWithChannelAction(body);
+    }
 
     console.log('No record found');
 
