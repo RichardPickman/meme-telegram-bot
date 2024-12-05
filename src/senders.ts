@@ -1,3 +1,8 @@
+import {
+    SendDocumentOptions,
+    SendPhotoOptions,
+    SendVideoOptions,
+} from 'node-telegram-bot-api';
 import { bot } from './instances/bot';
 import { getRandomEmoji } from './utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from './utils/responses';
@@ -41,13 +46,11 @@ export const sendProposedMemeControls = async (
 export const sendPhotoToChannel = async (
     photoId: string,
     channelId: string,
-    caption: string = '',
-    isProposal: boolean = true,
+    options: SendPhotoOptions,
+    isProposal: boolean = false,
 ) => {
     try {
-        const message = await bot.sendPhoto(channelId, photoId, {
-            caption,
-        });
+        const message = await bot.sendPhoto(channelId, photoId, options);
 
         console.log('Photo sent. Photo data: ', JSON.stringify(message));
 
@@ -66,13 +69,11 @@ export const sendPhotoToChannel = async (
 export const sendVideoToChannel = async (
     videoId: string,
     channelId: string,
-    caption: string = '',
-    isProposal: boolean = true,
+    options: SendVideoOptions,
+    isProposal: boolean = false,
 ) => {
     try {
-        const message = await bot.sendVideo(channelId, videoId, {
-            caption,
-        });
+        const message = await bot.sendVideo(channelId, videoId, options);
 
         if (isProposal) {
             await sendProposedMemeControls(message.message_id, channelId);
@@ -89,13 +90,11 @@ export const sendVideoToChannel = async (
 export const sendDocumentToChannel = async (
     documentId: string,
     channelId: string,
-    caption: string = '',
-    isProposal: boolean = true,
+    options: SendDocumentOptions,
+    isProposal: boolean = false,
 ) => {
     try {
-        const message = await bot.sendDocument(channelId, documentId, {
-            caption,
-        });
+        const message = await bot.sendDocument(channelId, documentId, options);
 
         if (isProposal) {
             await sendProposedMemeControls(message.message_id, channelId);

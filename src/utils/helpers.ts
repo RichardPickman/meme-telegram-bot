@@ -1,6 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-
-export const getBodyOrNull = (event: APIGatewayProxyEvent) =>
+export const getBodyOrNull = (event: { body: string | null }) =>
     event.body ? JSON.parse(event.body) : null;
 
 export const EMOJI_LIST = [
