@@ -64,8 +64,6 @@ export const handler = async (event: SQSEvent) => {
         if (isPostInChannel) {
             return await proceedWithChannelAction(body);
         }
-
-        return SuccessfullResponse('Handler ended without errors');
     }
 
     // If no record is found
