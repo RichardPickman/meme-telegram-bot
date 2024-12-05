@@ -10,7 +10,6 @@ import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
 const cleanUpAfterAction = async (
     memeId: number,
-    controlsId: number,
     caption: 'Approved' | 'Declined',
 ) => {
     console.log('Cleaning up after action...');
@@ -21,7 +20,13 @@ const cleanUpAfterAction = async (
             message_id: memeId,
         });
 
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
+        await bot.editMessageReplyMarkup(
+            { inline_keyboard: [] },
+            {
+                chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+                message_id: memeId,
+            },
+        );
 
         return;
     } catch (e) {
@@ -111,11 +116,7 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No message id provided');
         }
 
-        await cleanUpAfterAction(
-            Number(messageId),
-            body.callback_query.message.message_id,
-            'Approved',
-        );
+        await cleanUpAfterAction(Number(messageId), 'Approved');
 
         return SuccessfullResponse();
     }
@@ -133,11 +134,7 @@ export const proceedWithAdminAction = async (
             text: 'Got you boss, I will not send this one 🫡',
         });
 
-        await cleanUpAfterAction(
-            Number(messageId),
-            body.callback_query.message.message_id,
-            'Declined',
-        );
+        await cleanUpAfterAction(Number(messageId), 'Declined');
 
         return SuccessfullResponse();
     }
