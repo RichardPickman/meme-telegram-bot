@@ -28,6 +28,8 @@ if (!ENV_VARS.every(Boolean)) {
 export const handler = async (event: SQSEvent) => {
     console.log('Starting handler...');
 
+    console.log('Proceed with event: ', event);
+
     for (const record of event.Records) {
         const body = getBodyOrNull(record);
 
@@ -36,8 +38,6 @@ export const handler = async (event: SQSEvent) => {
 
             return ErrorResponse('Invalid event');
         }
-
-        console.log('Proceed with body: ', body);
 
         // Check chat type presence
         const isMemeProposal = isMessageContainPrivateChatType(body.message);
