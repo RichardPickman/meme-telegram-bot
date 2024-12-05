@@ -1,5 +1,6 @@
 import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
@@ -49,6 +50,14 @@ export class MemeTelegramBotStack extends Stack {
                 },
             },
         );
+
+        const queueHandlerPolicy = new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['sqs:SendMessage'],
+            resources: [memeTelegramQueue.queueArn],
+        });
+
+        queueHandler.addToRolePolicy(queueHandlerPolicy);
 
         memeTelegramBotHandler.addEventSource(
             new SqsEventSource(memeTelegramQueue, { batchSize: 1 }),
