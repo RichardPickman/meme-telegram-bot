@@ -37,7 +37,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(feedbackMessage, data.chat.id);
+        await sendMessage(getRandomReaction(), data.chat.id);
 
         return SuccessfullResponse();
     }
@@ -57,7 +57,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(feedbackMessage, data.chat.id);
+        await sendMessage(getRandomReaction(), data.chat.id);
 
         return SuccessfullResponse();
     }
