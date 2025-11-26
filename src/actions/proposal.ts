@@ -13,6 +13,7 @@ import {
     isPhotoParameterExist,
     isVideoParameterExist,
 } from '../utils/booleans';
+import { getRandomReaction } from '../utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
 const feedbackMessage =
@@ -76,7 +77,7 @@ const handleProposal = async (data: Message) => {
             data.caption,
         );
 
-        await sendMessage(feedbackMessage, data.chat.id);
+        await sendMessage(getRandomReaction(), data.chat.id);
 
         return SuccessfullResponse();
     }

@@ -79,5 +79,19 @@ export const EMOJI_LIST = [
     '😡',
 ];
 
-export const getRandomEmoji = () =>
-    EMOJI_LIST[Math.floor(Math.random() * EMOJI_LIST.length)];
+export const LAUGHS_LIST = [
+    'Хаха!',
+    'Хехе',
+    'АХАХАХА',
+    'Хахахаха',
+    'ХЕХЕХЕ',
+    'Ахахаха',
+    'Xaxaxa',
+    'Блин, да не смешно же!',
+];
+
+export const getRandomEmoji = () => getRandomArrayElement(EMOJI_LIST);
+export const getRandomReaction = () => getRandomArrayElement(LAUGHS_LIST);
+
+export const getRandomArrayElement = <T>(arr: T[]): T =>
+    arr[Math.floor(Math.random() * arr.length)];
