@@ -16,9 +16,6 @@ import {
 import { getRandomReaction } from '../utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from '../utils/responses';
 
-const feedbackMessage =
-    'Thanks for your contribution. We will review it as soon as possible.';
-
 const handleProposal = async (data: Message) => {
     if (isPhotoParameterExist(data)) {
         const photo = data.photo?.at(-1);
