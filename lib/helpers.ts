@@ -5,7 +5,7 @@ import path from 'path';
 export const rootDir = path.join(__dirname, '../');
 
 export const commonLambdaProps: NodejsFunctionProps = {
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_LATEST,
     projectRoot: rootDir,
     depsLockFilePath: path.join(rootDir, 'package-lock.json'),
     bundling: {
