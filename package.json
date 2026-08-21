@@ -11,14 +11,14 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.5",
     "@types/aws-lambda": "^8.10.162",
     "@types/jest": "^30.0.0",
     "@types/node": "26.2.0",
     "@types/node-telegram-bot-api": "^0.64.15",
     "aws-cdk": "2.1138.0",
     "esbuild": "^0.28.2",
-    "eslint": "^10.8.1",
+    "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.11.0",
     "jest": "^30.4.2",
