@@ -1,8 +1,10 @@
-import { Update } from 'node-telegram-bot-api';
+import { Message, Update } from 'node-telegram-bot-api';
 import { setReactionToPost } from '../senders';
 import { ErrorResponse } from '../utils/responses';
 
-export const proceedWithChannelAction = async (data: Update) => {
+export const proceedWithChannelAction = async (
+    data: Update & { channel_post: Message },
+) => {
     console.log('Proceeding with channel action...');
 
     const channel_post = data.channel_post;
