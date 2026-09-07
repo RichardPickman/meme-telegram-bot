@@ -4,9 +4,9 @@ import { proceedWithChannelAction } from './actions/channel';
 import { proceedWithMemeProposal } from './actions/proposal';
 import {
     isActionContainChannelPostOrMessage,
+    isCallbackQuery,
     isGroupPost,
     isMessageContainPrivateChatType,
-    isMessageIsCallbackQuery,
 } from './utils/booleans';
 import { getBodyOrNull } from './utils/helpers';
 import { ErrorResponse, SuccessfullResponse } from './utils/responses';
@@ -50,7 +50,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         return await proceedWithMemeProposal(body);
     }
 
-    const isAdminAction = isMessageIsCallbackQuery(body);
+    const isAdminAction = isCallbackQuery(body);
 
     if (isAdminAction) {
         return await proceedWithAdminAction(body);

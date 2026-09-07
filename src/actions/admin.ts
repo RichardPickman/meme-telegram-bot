@@ -16,12 +16,15 @@ const cleanUpAfterAction = async (
     console.log('Cleaning up after action...');
 
     try {
-        await bot.editMessageCaption(caption, {
+        await bot.api.editMessageCaption({
             chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
             message_id: memeId,
+            caption,
         });
-
-        await bot.deleteMessage(TELEGRAM_PROPOSAL_CHANNEL_ID!, controlsId);
+        await bot.api.deleteMessage({
+            chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            message_id: controlsId,
+        });
 
         return;
     } catch (e) {
@@ -31,9 +34,9 @@ const cleanUpAfterAction = async (
     }
 };
 
-export const proceedWithAdminAction = async (
-    body: Body & { callback_query: CallbackQuery },
-) => {
+export const proceedWithAdminAction = async (body: {
+    callback_query: CallbackQuery;
+}) => {
     console.log('Proceeding with admin action...');
 
     const data = body.callback_query.data;
@@ -63,8 +66,9 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No chat id provided');
         }
 
-        await bot.answerCallbackQuery(body.callback_query.id, {
+        await bot.api.answerCallbackQuery({
             text: 'You are not allowed to proceed 🖕🏻',
+            callback_query_id: body.callback_query.id,
         });
 
         return ErrorResponse('User is not allowed to proceed');
@@ -73,11 +77,11 @@ export const proceedWithAdminAction = async (
     if (action === 'approve') {
         console.log('Action is approved. Proceeding with sending...');
 
-        const message = await bot.forwardMessage(
-            TELEGRAM_MEME_CHANNEL_ID!,
-            TELEGRAM_PROPOSAL_CHANNEL_ID!,
-            Number(messageId),
-        );
+        const message = await bot.api.forwardMessage({
+            from_chat_id: TELEGRAM_PROPOSAL_CHANNEL_ID!,
+            chat_id: TELEGRAM_MEME_CHANNEL_ID!,
+            message_id: Number(messageId),
+        });
 
         if (!message) {
             console.log('No message provided');
@@ -85,8 +89,9 @@ export const proceedWithAdminAction = async (
             return ErrorResponse('No message provided');
         }
 
-        await bot.answerCallbackQuery(body.callback_query.id, {
+        await bot.api.answerCallbackQuery({
             text: 'Meme sent 🎉',
+            callback_query_id: body.callback_query.id,
         });
 
         await setReactionToPost(
@@ -118,8 +123,9 @@ export const proceedWithAdminAction = async (
     if (action === 'decline') {
         console.log('Action is approved. Proceeding with sending...');
 
-        await bot.answerCallbackQuery(body.callback_query.id, {
+        await bot.api.answerCallbackQuery({
             text: 'Got you boss, I will not send this one 🫡',
+            callback_query_id: body.callback_query.id,
         });
 
         await cleanUpAfterAction(

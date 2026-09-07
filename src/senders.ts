@@ -9,7 +9,9 @@ export const sendProposedMemeControls = async (
     console.log(`Proceeding with action buttons...`);
 
     try {
-        await bot.sendMessage(channelId, '🧐', {
+        await bot.api.sendMessage({
+            chat_id: channelId,
+            text: '🧐',
             reply_markup: {
                 inline_keyboard: [
                     [
@@ -44,8 +46,10 @@ export const sendPhotoToChannel = async (
     caption: string = '',
     isProposal: boolean = true,
 ) => {
-    try {
-        const message = await bot.sendPhoto(channelId, photoId, {
+    try { 
+        const message = await bot.api.sendPhoto({
+            chat_id: channelId,
+            photo: photoId,
             caption,
         });
 
@@ -70,7 +74,9 @@ export const sendVideoToChannel = async (
     isProposal: boolean = true,
 ) => {
     try {
-        const message = await bot.sendVideo(channelId, videoId, {
+        const message = await bot.api.sendVideo({
+            chat_id: channelId,
+            video: videoId,
             caption,
         });
 
@@ -93,7 +99,9 @@ export const sendDocumentToChannel = async (
     isProposal: boolean = true,
 ) => {
     try {
-        const message = await bot.sendDocument(channelId, documentId, {
+        const message = await bot.api.sendDocument({
+            chat_id: channelId,
+            document: documentId,
             caption,
         });
 
@@ -113,7 +121,7 @@ export const sendMessage = async (text: string, chatId: number) => {
     console.log('Sending feedback...');
 
     try {
-        await bot.sendMessage(chatId, text);
+        await bot.api.sendMessage({ chat_id: chatId, text });
 
         return SuccessfullResponse();
     } catch (e) {
@@ -131,7 +139,7 @@ export const setReactionToPost = async (
 
     try {
         // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
-        await bot.setMessageReaction(channelId, messageId, {
+        await bot.api.setMessageReaction(channelId, messageId, {
             reaction: [
                 {
                     type: 'emoji',
