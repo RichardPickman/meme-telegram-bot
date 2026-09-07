@@ -46,7 +46,7 @@ export const sendPhotoToChannel = async (
     caption: string = '',
     isProposal: boolean = true,
 ) => {
-    try { 
+    try {
         const message = await bot.api.sendPhoto({
             chat_id: channelId,
             photo: photoId,
@@ -138,8 +138,9 @@ export const setReactionToPost = async (
     console.log('Sending reaction...');
 
     try {
-        // @ts-expect-error - setMessageReaction is not in the type definition, but it is presented. TODO: remove ts-error when it is fixed
-        await bot.api.setMessageReaction(channelId, messageId, {
+        await bot.api.setMessageReaction({
+            chat_id: channelId,
+            message_id: messageId,
             reaction: [
                 {
                     type: 'emoji',
